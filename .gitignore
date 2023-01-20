@@ -3,3 +3,14 @@
 ################################################################################
 
 /eShop2022/eShop.DAL/bin/Debug/net6.0
+/eShop2022/eShop.DAL/obj
+/eShop2022/eShop.DAL.Test/bin/Debug/net6.0
+/eShop2022/eShop.DAL.Test/obj
+/eShop2022/eShop.Infrastructure/bin/Debug/net6.0
+/eShop2022/eShop.Infrastructure/obj
+/.vs
+/eShop2022/.vs
+/eShop2022/eShop.BLL/bin/Debug/net6.0
+/eShop2022/eShop.BLL/obj
+/eShop2022/eShop.BLL.Test/bin/Debug/net6.0
+/eShop2022/eShop.BLL.Test/obj
