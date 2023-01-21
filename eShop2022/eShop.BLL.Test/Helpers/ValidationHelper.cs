@@ -11,7 +11,7 @@ namespace eShop.BLL.Test.Helpers
 {
     public static class ValidationHelper
     {
-        public static bool ValidateBrand(BrandView brandView)
+        public static bool ValidateBrand(BrandFullView brandView)
         {
             return (brandView.IsNotNull() && brandView.Id > 0 && brandView.Guid == Constants.BrandGuid);
         }

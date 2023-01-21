@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace eShop.BLL.Test.Helpers
 {
-    public class BrandHelper : BaseHelper<BrandView>
+    public class BrandHelper : BaseHelper<BrandFullView>
     {
         private readonly IBrandLogic _brandLogic;
         public BrandHelper(IBrandLogic brandLogic)
@@ -16,23 +16,23 @@ namespace eShop.BLL.Test.Helpers
             _brandLogic = brandLogic;
         }
 
-        public static BrandView GetTestBrandView(Guid brandGuid)
+        public static BrandFullView GetTestBrandView(Guid brandGuid)
         {
-            BrandView brandView = new BrandView()
+            BrandFullView brandView = new BrandFullView()
             {
                 Guid = brandGuid,
                 Name = "Test Brand Name",
                 Description = "Test Brand Description",
-                IsHidden = false
+                IsHidden = false,
             };
 
             return brandView;
 
         }
 
-        public override BrandView Insert(Guid brandGuid)
+        public override BrandFullView Insert(Guid brandGuid)
         {
-            BrandView brandView = GetTestBrandView(brandGuid);
+            BrandFullView brandView = GetTestBrandView(brandGuid);
             return _brandLogic.Insert(brandView);
         }
 

@@ -26,7 +26,7 @@ namespace eShop.BLL.Test
         public void Test1_Insert()
         {
             // Arrange
-            BrandView brandView = BrandHelper.GetTestBrandView(Constants.BrandGuid);
+            BrandFullView brandView = BrandHelper.GetTestBrandView(Constants.BrandGuid);
 
             // Act
             brandView = _brandHelper.Insert(Constants.BrandGuid);
@@ -39,7 +39,7 @@ namespace eShop.BLL.Test
         public void Test2_GetAll()
         {
             // Arrange
-            List<BrandView> brands;
+            List<BrandMinimalView> brands;
 
             // Act
             brands = _brandLogic.GetAll();
@@ -52,7 +52,7 @@ namespace eShop.BLL.Test
         public void Test3_GetByGuid()
         {
             // Arrange
-            BrandView brandView;
+            BrandFullView brandView;
 
             // Act
             brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
@@ -66,7 +66,7 @@ namespace eShop.BLL.Test
         {
             // Arrange
             string newBrandName = "Test New Brand Name";
-            BrandView brandView;
+            BrandFullView brandView;
             
 
             // Act
@@ -85,7 +85,7 @@ namespace eShop.BLL.Test
         public void Test5_Delete()
         {
             // Arrange
-            BrandView brandView;
+            BrandFullView brandView;
 
             // Act
             _brandHelper.Delete(Constants.BrandGuid);

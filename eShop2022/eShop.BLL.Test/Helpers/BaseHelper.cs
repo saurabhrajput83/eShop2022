@@ -10,7 +10,7 @@ namespace eShop.BLL.Test.Helpers
 {
     public abstract class BaseHelper<T> where T : class
     {
-        internal void UpdateDto(BaseView baseView)
+        internal void UpdateDto(BaseFullView baseView)
         {
            
         }
