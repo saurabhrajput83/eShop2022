@@ -10,8 +10,8 @@ namespace eShop.DAL.Entities
     {
         public int Quantity { get; set; }
         public int AlertQuantity { get; set; }
-        public int WarehouseId { get; set; }
-        public int ProductId { get; set; }
+        public int? WarehouseId { get; set; }
+        public int? ProductId { get; set; }
         public virtual Warehouse? Warehouse { get; set; }
         public virtual Product? Product { get; set; }
 

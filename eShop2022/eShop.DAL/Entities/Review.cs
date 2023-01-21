@@ -11,10 +11,10 @@ namespace eShop.DAL.Entities
         public bool IsHidden { get; set; }
         public string? Headline { get; set; }
         public bool IsApproved { get; set; }
-        public int ContactId { get; set; }
+        public int? ContactId { get; set; }
         public int Rating { get; set; }
         public string? Comments { get; set; }
-        public int ProductId { get; set; }
+        public int? ProductId { get; set; }
         public Product? Product { get; set; }
 
     }

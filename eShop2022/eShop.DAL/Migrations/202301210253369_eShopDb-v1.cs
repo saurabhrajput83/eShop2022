@@ -71,19 +71,19 @@
                         ModelNumber = c.String(),
                         Summary = c.String(),
                         Description = c.String(),
-                        ListPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        SellingPrice = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        ListPrice = c.Double(nullable: false),
+                        SellingPrice = c.Double(nullable: false),
                         InfoUrl = c.String(),
                         ImageUrl = c.String(),
                         IsFeatured = c.Boolean(nullable: false),
                         IsActive = c.Boolean(nullable: false),
                         IsTaxable = c.Boolean(nullable: false),
                         HasFreeShipping = c.Boolean(nullable: false),
-                        Weight = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Length = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Breadth = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Height = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        BrandId = c.Int(nullable: false),
+                        Weight = c.Double(nullable: false),
+                        Length = c.Double(nullable: false),
+                        Breadth = c.Double(nullable: false),
+                        Height = c.Double(nullable: false),
+                        BrandId = c.Int(),
                         Guid = c.Guid(nullable: false),
                         CreatedOn = c.DateTime(),
                         CreatedBy = c.String(),
@@ -91,7 +91,7 @@
                         ModifiedBy = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Brands", t => t.BrandId, cascadeDelete: true)
+                .ForeignKey("dbo.Brands", t => t.BrandId)
                 .Index(t => t.BrandId);
             
             CreateTable(
@@ -101,8 +101,8 @@
                         Id = c.Int(nullable: false, identity: true),
                         Quantity = c.Int(nullable: false),
                         AlertQuantity = c.Int(nullable: false),
-                        WarehouseId = c.Int(nullable: false),
-                        ProductId = c.Int(nullable: false),
+                        WarehouseId = c.Int(),
+                        ProductId = c.Int(),
                         Guid = c.Guid(nullable: false),
                         CreatedOn = c.DateTime(),
                         CreatedBy = c.String(),
@@ -110,8 +110,8 @@
                         ModifiedBy = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
-                .ForeignKey("dbo.Warehouses", t => t.WarehouseId, cascadeDelete: true)
+                .ForeignKey("dbo.Products", t => t.ProductId)
+                .ForeignKey("dbo.Warehouses", t => t.WarehouseId)
                 .Index(t => t.WarehouseId)
                 .Index(t => t.ProductId);
             
@@ -156,7 +156,7 @@
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        PriceModifier = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PriceModifier = c.Double(nullable: false),
                         Quantity = c.Int(nullable: false),
                         IsHidden = c.Boolean(nullable: false),
                         ProductId = c.Int(),
@@ -181,7 +181,7 @@
                         Name = c.String(),
                         Description = c.String(),
                         IsHidden = c.Boolean(nullable: false),
-                        VariationTypeId = c.Int(nullable: false),
+                        VariationTypeId = c.Int(),
                         Guid = c.Guid(nullable: false),
                         CreatedOn = c.DateTime(),
                         CreatedBy = c.String(),
@@ -189,7 +189,7 @@
                         ModifiedBy = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.VariationTypes", t => t.VariationTypeId, cascadeDelete: true)
+                .ForeignKey("dbo.VariationTypes", t => t.VariationTypeId)
                 .Index(t => t.VariationTypeId);
             
             CreateTable(
@@ -215,10 +215,10 @@
                         IsHidden = c.Boolean(nullable: false),
                         Headline = c.String(),
                         IsApproved = c.Boolean(nullable: false),
-                        ContactId = c.Int(nullable: false),
+                        ContactId = c.Int(),
                         Rating = c.Int(nullable: false),
                         Comments = c.String(),
-                        ProductId = c.Int(nullable: false),
+                        ProductId = c.Int(),
                         Guid = c.Guid(nullable: false),
                         CreatedOn = c.DateTime(),
                         CreatedBy = c.String(),
@@ -226,7 +226,7 @@
                         ModifiedBy = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
+                .ForeignKey("dbo.Products", t => t.ProductId)
                 .Index(t => t.ProductId);
             
             CreateTable(
@@ -235,8 +235,8 @@
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Quantity = c.Int(nullable: false),
-                        ShoppingCartId = c.Int(nullable: false),
-                        ProductId = c.Int(nullable: false),
+                        ShoppingCartId = c.Int(),
+                        ProductId = c.Int(),
                         Guid = c.Guid(nullable: false),
                         CreatedOn = c.DateTime(),
                         CreatedBy = c.String(),
@@ -244,8 +244,8 @@
                         ModifiedBy = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
-                .ForeignKey("dbo.ShoppingCarts", t => t.ShoppingCartId, cascadeDelete: true)
+                .ForeignKey("dbo.Products", t => t.ProductId)
+                .ForeignKey("dbo.ShoppingCarts", t => t.ShoppingCartId)
                 .Index(t => t.ShoppingCartId)
                 .Index(t => t.ProductId);
             

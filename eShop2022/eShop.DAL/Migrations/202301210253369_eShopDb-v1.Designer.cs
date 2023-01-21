@@ -13,7 +13,7 @@ namespace eShop.DAL.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202301201433556_eShopDb-v1"; }
+            get { return "202301210253369_eShopDb-v1"; }
         }
         
         string IMigrationMetadata.Source

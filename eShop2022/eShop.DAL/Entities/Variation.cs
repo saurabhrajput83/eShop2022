@@ -11,7 +11,7 @@ namespace eShop.DAL.Entities
         public string? Name { get; set; }
         public string? Description { get; set; }
         public bool IsHidden { get; set; }
-        public int VariationTypeId { get; set; }
+        public int? VariationTypeId { get; set; }
         public VariationType? VariationType { get; set; }
     }
 }

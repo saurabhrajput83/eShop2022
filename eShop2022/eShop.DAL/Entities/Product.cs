@@ -13,19 +13,19 @@ namespace eShop.DAL.Entities
         public string? ModelNumber { get; set; }
         public string? Summary { get; set; }
         public string? Description { get; set; }
-        public decimal ListPrice { get; set; }
-        public decimal SellingPrice { get; set; }
+        public double ListPrice { get; set; }
+        public double SellingPrice { get; set; }
         public string? InfoUrl { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsFeatured { get; set; }
         public bool IsActive { get; set; }
         public bool IsTaxable { get; set; }
         public bool HasFreeShipping { get; set; }
-        public decimal Weight { get; set; }
-        public decimal Length { get; set; }
-        public decimal Breadth { get; set; }
-        public decimal Height { get; set; }
-        public int BrandId { get; set; }
+        public double Weight { get; set; }
+        public double Length { get; set; }
+        public double Breadth { get; set; }
+        public double Height { get; set; }
+        public int? BrandId { get; set; }
         public Brand? Brand { get; set; }
     }
 }

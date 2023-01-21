@@ -8,7 +8,7 @@ namespace eShop.DAL.Entities
 {
     public class ProductVariation : BaseEntity
     {
-        public decimal PriceModifier { get; set; }
+        public double PriceModifier { get; set; }
         public int Quantity { get; set; }
         public bool IsHidden { get; set; }
         public int? ProductId { get; set; }
