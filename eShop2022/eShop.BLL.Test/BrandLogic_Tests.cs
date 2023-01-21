@@ -1,19 +1,30 @@
+using AutoMapper;
+using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
+using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
+using eShop.DAL.Implementations;
+using eShop.DAL.Infrastructure;
+using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace eShop.BLL.Test
 {
-    public class BrandLogic_Tests
+    public class BrandLogic_Tests : Base_Test
     {
+        private readonly IMapper _mapper;
+        private readonly ILogger<BrandLogic> _logger;
         private readonly IBrandLogic _brandLogic;
         private readonly BrandHelper _brandHelper;
 
         public BrandLogic_Tests()
         {
-            _brandLogic = new BrandLogic();
+            _mapper = AutoMapperConfiguration.Configure();
+            _logger = LoggerConfiguration.Configuration<BrandLogic>();
+            _brandLogic = new BrandLogic(eShopUnitOfWork, _mapper, _logger);
             _brandHelper = new BrandHelper(_brandLogic);
         }
 
@@ -67,14 +78,14 @@ namespace eShop.BLL.Test
             // Arrange
             string newBrandName = "Test New Brand Name";
             BrandFullView brandView;
-            
+
 
             // Act
             brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
 
             brandView.Name = newBrandName;
             _brandLogic.Update(brandView);
-            
+
             brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
 
             // Assert
