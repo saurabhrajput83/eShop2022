@@ -9,6 +9,7 @@ using eShop.DAL.Infrastructure;
 using eShop.DAL.Main;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,15 +21,16 @@ namespace eShop.BLL.Logics
 {
     public class BrandLogic : IBrandLogic
     {
-        private readonly eShopDbContext _eShopDbContext;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ILogger<BrandLogic> _logger;
 
-        public BrandLogic()
+
+        public BrandLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BrandLogic> logger)
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _mapper = AutoMapperConfiguration.Configure();
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public void Delete(Guid brandGuid)
@@ -44,6 +46,7 @@ namespace eShop.BLL.Logics
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "BrandLogic.Delete");
                 throw;
             }
         }
@@ -57,6 +60,7 @@ namespace eShop.BLL.Logics
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "BrandLogic.GetAll");
                 throw;
             }
         }
@@ -70,6 +74,7 @@ namespace eShop.BLL.Logics
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "BrandLogic.brandGuid");
                 throw;
             }
         }
@@ -85,6 +90,7 @@ namespace eShop.BLL.Logics
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "BrandLogic.Insert");
                 throw;
             }
         }
@@ -99,6 +105,7 @@ namespace eShop.BLL.Logics
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "BrandLogic.Update");
                 throw;
             }
         }
