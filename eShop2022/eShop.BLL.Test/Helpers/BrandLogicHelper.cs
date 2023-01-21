@@ -1,5 +1,12 @@
-﻿using eShop.BLL.Dtos;
+﻿using AutoMapper;
+using eShop.BLL.AutoMapper;
+using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
+using eShop.BLL.Logging;
+using eShop.DAL.Implementations;
+using eShop.DAL.Infrastructure;
+using eShop.DAL.Main;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +15,16 @@ using System.Threading.Tasks;
 
 namespace eShop.BLL.Test.Helpers
 {
-    public class BrandHelper : BaseHelper<BrandFullView>
+    public class BrandLogicHelper : BaseHelper<BrandFullView>
     {
-        private readonly IBrandLogic _brandLogic;
-        public BrandHelper(IBrandLogic brandLogic)
+        private readonly ILogicHelper _logicHelper;
+
+        public BrandLogicHelper(ILogicHelper logicHelper)
         {
-            _brandLogic = brandLogic;
+            _logicHelper = logicHelper;
         }
 
-        public static BrandFullView GetTestBrandView(Guid brandGuid)
+        public BrandFullView GetTestBrandView(Guid brandGuid)
         {
             BrandFullView brandView = new BrandFullView()
             {
@@ -26,6 +34,8 @@ namespace eShop.BLL.Test.Helpers
                 IsHidden = false,
             };
 
+            UpdateView(brandView);
+
             return brandView;
 
         }
@@ -33,12 +43,12 @@ namespace eShop.BLL.Test.Helpers
         public override BrandFullView Insert(Guid brandGuid)
         {
             BrandFullView brandView = GetTestBrandView(brandGuid);
-            return _brandLogic.Insert(brandView);
+            return _logicHelper.BrandLogic.Insert(brandView);
         }
 
         public override void Delete(Guid brandGuid)
         {
-            _brandLogic.Delete(brandGuid);
+            _logicHelper.BrandLogic.Delete(brandGuid);
         }
 
         public override void CleanUp()

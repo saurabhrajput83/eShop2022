@@ -13,19 +13,19 @@ using Microsoft.Extensions.Logging;
 
 namespace eShop.BLL.Test
 {
-    public class BrandLogic_Tests : Base_Test
+    public class BrandLogic_Tests
     {
-        private readonly IMapper _mapper;
-        private readonly ILogger<BrandLogic> _logger;
-        private readonly IBrandLogic _brandLogic;
-        private readonly BrandHelper _brandHelper;
-
+        private readonly eShopDbContext _eShopDbContext;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogicHelper _logicHelper;
+        private readonly BrandLogicHelper _brandLogicHelper;
+        
         public BrandLogic_Tests()
         {
-            _mapper = AutoMapperConfiguration.Configure();
-            _logger = LoggerConfiguration.Configuration<BrandLogic>();
-            _brandLogic = new BrandLogic(eShopUnitOfWork, _mapper, _logger);
-            _brandHelper = new BrandHelper(_brandLogic);
+            _eShopDbContext = new eShopDbContext();
+            _unitOfWork = new UnitOfWork(_eShopDbContext);
+            _logicHelper = new LogicHelper(_unitOfWork);
+            _brandLogicHelper = new BrandLogicHelper(_logicHelper);
         }
 
         [SetUp]
@@ -37,10 +37,10 @@ namespace eShop.BLL.Test
         public void Test1_Insert()
         {
             // Arrange
-            BrandFullView brandView = BrandHelper.GetTestBrandView(Constants.BrandGuid);
+            BrandFullView brandView = _brandLogicHelper.GetTestBrandView(Constants.BrandGuid);
 
             // Act
-            brandView = _brandHelper.Insert(Constants.BrandGuid);
+            brandView = _brandLogicHelper.Insert(Constants.BrandGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateBrand(brandView));
@@ -53,7 +53,7 @@ namespace eShop.BLL.Test
             List<BrandMinimalView> brands;
 
             // Act
-            brands = _brandLogic.GetAll();
+            brands = _logicHelper.BrandLogic.GetAll();
 
             // Assert
             Assert.IsTrue(brands.IsNotEmpty());
@@ -66,7 +66,7 @@ namespace eShop.BLL.Test
             BrandFullView brandView;
 
             // Act
-            brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
+            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateBrand(brandView));
@@ -81,12 +81,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
+            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
 
             brandView.Name = newBrandName;
-            _brandLogic.Update(brandView);
+            _logicHelper.BrandLogic.Update(brandView);
 
-            brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
+            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateBrand(brandView) && brandView.Name == newBrandName);
@@ -99,10 +99,10 @@ namespace eShop.BLL.Test
             BrandFullView brandView;
 
             // Act
-            _brandHelper.Delete(Constants.BrandGuid);
-            _brandHelper.CleanUp();
+            _brandLogicHelper.Delete(Constants.BrandGuid);
+            _brandLogicHelper.CleanUp();
 
-            brandView = _brandLogic.GetByGuid(Constants.BrandGuid);
+            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
 
             // Assert
             Assert.IsTrue(brandView.IsNull());
