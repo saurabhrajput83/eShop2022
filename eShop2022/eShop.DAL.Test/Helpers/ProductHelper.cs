@@ -39,9 +39,9 @@ namespace eShop.DAL.Test.Helpers
                 IsActive = true,
                 IsTaxable = true,
                 Length = 1,
-                ListPrice = 23.00M,
+                ListPrice = 23.00,
                 ModelNumber = "Test Model",
-                SellingPrice = 21.00M,
+                SellingPrice = 21.00,
                 Summary = "Test Summary",
                 Weight = 30
             };
