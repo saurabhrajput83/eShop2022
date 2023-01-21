@@ -14,4 +14,5 @@ namespace eShop.BLL.Dtos
         public int? ProductId { get; set; }
 
     }
+
 }
