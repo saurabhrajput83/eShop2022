@@ -48,12 +48,12 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<BrandView> GetAll()
+        public List<BrandMinimalView> GetAll()
         {
             try
             {
                 List<Brand> result = _unitOfWork.BrandRepository.GetAll().ToList();
-                return _mapper.Map<List<BrandView>>(result);
+                return _mapper.Map<List<BrandMinimalView>>(result);
             }
             catch (Exception ex)
             {
@@ -61,12 +61,12 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public BrandView GetByGuid(Guid brandGuid)
+        public BrandFullView GetByGuid(Guid brandGuid)
         {
             try
             {
                 Brand brandEntity = _unitOfWork.BrandRepository.GetByGuid(brandGuid);
-                return _mapper.Map<BrandView>(brandEntity);
+                return _mapper.Map<BrandFullView>(brandEntity);
             }
             catch (Exception ex)
             {
@@ -74,14 +74,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public BrandView Insert(BrandView brandView)
+        public BrandFullView Insert(BrandFullView brandView)
         {
             try
             {
                 Brand brandEntity = _mapper.Map<Brand>(brandView);
                 brandEntity = _unitOfWork.BrandRepository.Insert(brandEntity);
                 _unitOfWork.SaveChanges();
-                return _mapper.Map<BrandView>(brandEntity);
+                return _mapper.Map<BrandFullView>(brandEntity);
             }
             catch (Exception ex)
             {
@@ -89,11 +89,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(BrandView brandView)
+        public void Update(BrandFullView brandView)
         {
             try
             {
-                Brand brandEntity = _mapper.Map<BrandView, Brand>(brandView);
+                Brand brandEntity = _mapper.Map<BrandFullView, Brand>(brandView);
                 _unitOfWork.BrandRepository.Update(brandEntity);
                 _unitOfWork.SaveChanges();
             }

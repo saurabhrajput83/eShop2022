@@ -12,8 +12,10 @@ namespace eShop.BLL.Dtos
     {
         public BrandMapperProfile()
         {
-            CreateMap<BrandView, Brand>()
+            CreateMap<BrandFullView, Brand>()
                     .ReverseMap();
+            CreateMap<BrandMinimalView, Brand>()
+                   .ReverseMap();
         }
     }
 }

@@ -7,7 +7,15 @@ using System.Threading.Tasks;
 
 namespace eShop.BLL.Dtos
 {
-    public class BaseView
+    public class BaseFullView
+    {
+        public int Id { get; set; }
+        public Guid Guid { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? ModifiedBy { get; set; }
+    }
+
+    public class BaseMinimalView
     {
         public int Id { get; set; }
         public Guid Guid { get; set; }

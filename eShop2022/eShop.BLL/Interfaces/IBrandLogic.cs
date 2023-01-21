@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace eShop.BLL.Interfaces
 {
-    public interface IBrandLogic : IBaseLogic<BrandView>
+    public interface IBrandLogic : IBaseLogic<BrandFullView, BrandMinimalView>
     {
 
     }

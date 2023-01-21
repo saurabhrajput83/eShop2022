@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace eShop.BLL.Interfaces
 {
-    public interface IBaseLogic<T> where T : class
+    public interface IBaseLogic<TFullView, TMinimalView> where TFullView : class
     {
-        List<T> GetAll();
-        T GetByGuid(Guid guid);
-        T Insert(T entity);
-        void Update(T entity);
+        List<TMinimalView> GetAll();
+        TFullView GetByGuid(Guid guid);
+        TFullView Insert(TFullView entity);
+        void Update(TFullView entity);
         void Delete(Guid guid);
     }
 }
