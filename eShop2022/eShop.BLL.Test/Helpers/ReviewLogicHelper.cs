@@ -61,6 +61,8 @@ namespace eShop.BLL.Test.Helpers
 
         public override void CleanUp()
         {
+            _productLogicHelper.Delete(Constants.ProductGuid);
+            _productLogicHelper.CleanUp();
         }
 
     }

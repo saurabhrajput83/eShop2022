@@ -13,19 +13,19 @@ using Microsoft.Extensions.Logging;
 
 namespace eShop.BLL.Test
 {
-    public class BrandLogic_Tests
+    public class ReviewLogic_Tests
     {
         private readonly eShopDbContext _eShopDbContext;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogicHelper _logicHelper;
-        private readonly BrandLogicHelper _brandLogicHelper;
-
-        public BrandLogic_Tests()
+        private readonly ReviewLogicHelper _reviewLogicHelper;
+        
+        public ReviewLogic_Tests()
         {
             _eShopDbContext = new eShopDbContext();
             _unitOfWork = new UnitOfWork(_eShopDbContext);
             _logicHelper = new LogicHelper(_unitOfWork);
-            _brandLogicHelper = new BrandLogicHelper(_logicHelper);
+            _reviewLogicHelper = new ReviewLogicHelper(_logicHelper);
         }
 
         [SetUp]
@@ -37,75 +37,75 @@ namespace eShop.BLL.Test
         public void Test1_Insert()
         {
             // Arrange
-            BrandFullView brandView;
+            ReviewView reviewView;
 
             // Act
-            brandView = _brandLogicHelper.Insert(Constants.BrandGuid);
+            reviewView = _reviewLogicHelper.Insert(Constants.ReviewGuid);
 
             // Assert
-            Assert.IsTrue(ValidationHelper.ValidateBrand(brandView));
+            Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
         }
 
         [Test]
         public void Test2_GetAll()
         {
             // Arrange
-            List<BrandMinimalView> brands;
+            List<ReviewView> reviews;
 
             // Act
-            brands = _logicHelper.BrandLogic.GetAll();
+            reviews = _logicHelper.ReviewLogic.GetAll();
 
             // Assert
-            Assert.IsTrue(brands.IsNotEmpty());
+            Assert.IsTrue(reviews.IsNotEmpty());
         }
 
         [Test]
         public void Test3_GetByGuid()
         {
             // Arrange
-            BrandFullView brandView;
+            ReviewView reviewView;
 
             // Act
-            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
+            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
-            Assert.IsTrue(ValidationHelper.ValidateBrand(brandView));
+            Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
         }
 
         [Test]
         public void Test4_Update()
         {
             // Arrange
-            string newBrandName = "Test New Brand Name";
-            BrandFullView brandView;
+            string newHeadline = "Test New Review Headline";
+            ReviewView reviewView;
 
 
             // Act
-            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
+            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
-            brandView.Name = newBrandName;
-            _logicHelper.BrandLogic.Update(brandView);
+            reviewView.Headline = newHeadline;
+            _logicHelper.ReviewLogic.Update(reviewView);
 
-            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
+            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
-            Assert.IsTrue(ValidationHelper.ValidateBrand(brandView) && brandView.Name == newBrandName);
+            Assert.IsTrue(ValidationHelper.ValidateReview(reviewView) && reviewView.Headline == newHeadline);
         }
 
         [Test]
         public void Test5_Delete()
         {
             // Arrange
-            BrandFullView brandView;
+            ReviewView reviewView;
 
             // Act
-            _brandLogicHelper.Delete(Constants.BrandGuid);
-            _brandLogicHelper.CleanUp();
+            _reviewLogicHelper.Delete(Constants.ReviewGuid);
+            _reviewLogicHelper.CleanUp();
 
-            brandView = _logicHelper.BrandLogic.GetByGuid(Constants.BrandGuid);
+            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
-            Assert.IsTrue(brandView.IsNull());
+            Assert.IsTrue(reviewView.IsNull());
         }
     }
 }

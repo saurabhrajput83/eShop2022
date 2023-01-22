@@ -64,6 +64,7 @@ namespace eShop.BLL.Test.Helpers
             _departmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
             _departmentLogicHelper.Delete(Constants.DepartmentGuid);
             _departmentLogicHelper.CleanUp();
+
             _productLogicHelper.Delete(Constants.ProductGuid);
             _productLogicHelper.CleanUp();
         }

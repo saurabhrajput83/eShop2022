@@ -20,7 +20,7 @@ namespace eShop.BLL.Test.Helpers
         }
 
 
-        public DepartmentFullView GetTestDepartment(Guid departmentGuid)
+        public DepartmentFullView GetTestDepartmentView(Guid departmentGuid)
         {
             DepartmentFullView parentDepartment = new DepartmentFullView()
             {
@@ -58,7 +58,7 @@ namespace eShop.BLL.Test.Helpers
 
         public override DepartmentFullView Insert(Guid departmentGuid)
         {
-            DepartmentFullView department = GetTestDepartment(departmentGuid);
+            DepartmentFullView department = GetTestDepartmentView(departmentGuid);
             return _logicHelper.DepartmentLogic.Insert(department);
         }
 
