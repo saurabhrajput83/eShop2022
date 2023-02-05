@@ -1,4 +1,6 @@
-﻿using System;
+﻿using eShop.DAL.Main;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +10,6 @@ namespace eShop.DAL.Test
 {
     public abstract class Base_Test
     {
-       
-
     }
 }
 

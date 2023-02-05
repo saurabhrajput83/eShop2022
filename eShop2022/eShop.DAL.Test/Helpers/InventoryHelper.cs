@@ -1,5 +1,5 @@
 ﻿using eShop.DAL.Entities;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,11 @@ namespace eShop.DAL.Test.Helpers
 {
     public class InventoryHelper : BaseHelper<Inventory>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly ProductHelper _productHelper;
         private readonly WarehouseHelper _warehouseHelper;
 
-        public InventoryHelper(IUnitOfWork unitOfWork)
+        public InventoryHelper(IeShopUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _productHelper = new ProductHelper(_unitOfWork);

@@ -1,5 +1,5 @@
 ﻿using eShop.DAL.Entities;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,10 @@ namespace eShop.DAL.Test.Helpers
 {
     public class VariationHelper : BaseHelper<Variation>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly VariationTypeHelper _variationTypeHelper;
 
-        public VariationHelper(IUnitOfWork unitOfWork)
+        public VariationHelper(IeShopUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _variationTypeHelper = new VariationTypeHelper(_unitOfWork);

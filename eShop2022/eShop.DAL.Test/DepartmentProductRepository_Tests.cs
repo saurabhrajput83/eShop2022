@@ -1,6 +1,6 @@
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
@@ -12,7 +12,7 @@ namespace eShop.DAL.Test
     public class DepartmentProductRepository_Tests : Base_Test
     {
         private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly DepartmentHelper _departmentHelper;
         private readonly ProductHelper _productHelper;
         private readonly BrandHelper _brandHelper;
@@ -21,7 +21,7 @@ namespace eShop.DAL.Test
         public DepartmentProductRepository_Tests()
         {
             _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
+            _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
             _departmentHelper = new DepartmentHelper(_unitOfWork);
             _productHelper = new ProductHelper(_unitOfWork);
             _brandHelper = new BrandHelper(_unitOfWork);

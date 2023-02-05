@@ -1,5 +1,5 @@
 ﻿using eShop.DAL.Entities;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
@@ -11,11 +11,11 @@ namespace eShop.DAL.Test.Helpers
 {
     public class DepartmentProductHelper : BaseHelper<DepartmentProduct>
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly DepartmentHelper _departmentHelper;
         private readonly ProductHelper _productHelper;
 
-        public DepartmentProductHelper(IUnitOfWork unitOfWork)
+        public DepartmentProductHelper(IeShopUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _departmentHelper = new DepartmentHelper(unitOfWork);
