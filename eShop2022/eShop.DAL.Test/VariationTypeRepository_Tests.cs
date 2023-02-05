@@ -17,7 +17,7 @@ namespace eShop.DAL.Test
 
         public VariationTypeRepository_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
+            _eShopDbContext = new eShopDbContext(DBContextHelper.Options);
             _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
             _variationTypeHelper = new VariationTypeHelper(_unitOfWork);
         }

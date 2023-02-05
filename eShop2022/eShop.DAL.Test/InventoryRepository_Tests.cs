@@ -5,6 +5,7 @@ using eShop.DAL.Main;
 using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShop.DAL.Test
 {
@@ -17,7 +18,12 @@ namespace eShop.DAL.Test
 
         public InventoryRepository_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
+            DbContextOptions<eShopDbContext> dbContextOptions =
+            new DbContextOptionsBuilder<eShopDbContext>()
+            .UseInMemoryDatabase(databaseName: "eShopDb")
+            .Options;
+
+            _eShopDbContext = new eShopDbContext(dbContextOptions);
             _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
             _inventoryHelper = new InventoryHelper(_unitOfWork);
         }

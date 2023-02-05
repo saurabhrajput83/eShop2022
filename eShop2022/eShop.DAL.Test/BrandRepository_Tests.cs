@@ -18,7 +18,7 @@ namespace eShop.DAL.Test
 
         public BrandRepository_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
+            _eShopDbContext = new eShopDbContext(DBContextHelper.Options);
             _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
             _brandHelper = new BrandHelper(_unitOfWork);
         }

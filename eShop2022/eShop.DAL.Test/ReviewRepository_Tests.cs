@@ -5,6 +5,7 @@ using eShop.DAL.Main;
 using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace eShop.DAL.Test
 {
@@ -17,7 +18,7 @@ namespace eShop.DAL.Test
 
         public ReviewRepository_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
+            _eShopDbContext = new eShopDbContext(DBContextHelper.Options);
             _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
             _reviewHelper = new ReviewHelper(_unitOfWork);
         }
