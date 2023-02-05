@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class ShoppingCartLogic : IShoppingCartLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<ShoppingCartLogic> _logger;
 
 
-        public ShoppingCartLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ShoppingCartLogic> logger)
+        public ShoppingCartLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<ShoppingCartLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 ShoppingCart shoppingCartEntity = _unitOfWork.ShoppingCartRepository.GetByGuid(shoppingCartGuid);
                 if (shoppingCartEntity.IsNotNull())
                 {
-                    shoppingCartEntity = _unitOfWork.ShoppingCartRepository.Delete(shoppingCartEntity);
+                    _unitOfWork.ShoppingCartRepository.Delete(shoppingCartEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 ShoppingCart shoppingCartEntity = _mapper.Map<ShoppingCart>(shoppingCartView);
-                shoppingCartEntity = _unitOfWork.ShoppingCartRepository.Insert(shoppingCartEntity);
+                _unitOfWork.ShoppingCartRepository.Insert(shoppingCartEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<ShoppingCartView>(shoppingCartEntity);
             }

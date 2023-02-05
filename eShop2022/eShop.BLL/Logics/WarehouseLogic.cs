@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class WarehouseLogic : IWarehouseLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<WarehouseLogic> _logger;
 
 
-        public WarehouseLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<WarehouseLogic> logger)
+        public WarehouseLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<WarehouseLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Warehouse warehouseEntity = _unitOfWork.WarehouseRepository.GetByGuid(warehouseGuid);
                 if (warehouseEntity.IsNotNull())
                 {
-                    warehouseEntity = _unitOfWork.WarehouseRepository.Delete(warehouseEntity);
+                    _unitOfWork.WarehouseRepository.Delete(warehouseEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Warehouse warehouseEntity = _mapper.Map<Warehouse>(warehouseView);
-                warehouseEntity = _unitOfWork.WarehouseRepository.Insert(warehouseEntity);
+                _unitOfWork.WarehouseRepository.Insert(warehouseEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<WarehouseFullView>(warehouseEntity);
             }

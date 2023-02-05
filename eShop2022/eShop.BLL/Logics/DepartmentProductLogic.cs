@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class DepartmentProductLogic : IDepartmentProductLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<DepartmentProductLogic> _logger;
 
 
-        public DepartmentProductLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentProductLogic> logger)
+        public DepartmentProductLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentProductLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 DepartmentProduct departmentProductEntity = _unitOfWork.DepartmentProductRepository.GetByGuid(departmentProductGuid);
                 if (departmentProductEntity.IsNotNull())
                 {
-                    departmentProductEntity = _unitOfWork.DepartmentProductRepository.Delete(departmentProductEntity);
+                    _unitOfWork.DepartmentProductRepository.Delete(departmentProductEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 DepartmentProduct departmentProductEntity = _mapper.Map<DepartmentProduct>(departmentProductView);
-                departmentProductEntity = _unitOfWork.DepartmentProductRepository.Insert(departmentProductEntity);
+                _unitOfWork.DepartmentProductRepository.Insert(departmentProductEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<DepartmentProductFullView>(departmentProductEntity);
             }

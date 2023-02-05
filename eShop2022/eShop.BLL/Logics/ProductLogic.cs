@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class ProductLogic : IProductLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductLogic> _logger;
 
 
-        public ProductLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductLogic> logger)
+        public ProductLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Product productEntity = _unitOfWork.ProductRepository.GetByGuid(productGuid);
                 if (productEntity.IsNotNull())
                 {
-                    productEntity = _unitOfWork.ProductRepository.Delete(productEntity);
+                    _unitOfWork.ProductRepository.Delete(productEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Product productEntity = _mapper.Map<Product>(productView);
-                productEntity = _unitOfWork.ProductRepository.Insert(productEntity);
+                _unitOfWork.ProductRepository.Insert(productEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<ProductFullView>(productEntity);
             }

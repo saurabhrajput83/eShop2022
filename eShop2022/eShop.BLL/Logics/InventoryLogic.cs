@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class InventoryLogic : IInventoryLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<InventoryLogic> _logger;
 
 
-        public InventoryLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<InventoryLogic> logger)
+        public InventoryLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<InventoryLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Inventory inventoryEntity = _unitOfWork.InventoryRepository.GetByGuid(inventoryGuid);
                 if (inventoryEntity.IsNotNull())
                 {
-                    inventoryEntity = _unitOfWork.InventoryRepository.Delete(inventoryEntity);
+                    _unitOfWork.InventoryRepository.Delete(inventoryEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Inventory inventoryEntity = _mapper.Map<Inventory>(inventoryView);
-                inventoryEntity = _unitOfWork.InventoryRepository.Insert(inventoryEntity);
+                _unitOfWork.InventoryRepository.Insert(inventoryEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<InventoryFullView>(inventoryEntity);
             }

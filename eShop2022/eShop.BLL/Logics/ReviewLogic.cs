@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class ReviewLogic : IReviewLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<ReviewLogic> _logger;
 
 
-        public ReviewLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ReviewLogic> logger)
+        public ReviewLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<ReviewLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Review reviewEntity = _unitOfWork.ReviewRepository.GetByGuid(reviewGuid);
                 if (reviewEntity.IsNotNull())
                 {
-                    reviewEntity = _unitOfWork.ReviewRepository.Delete(reviewEntity);
+                    _unitOfWork.ReviewRepository.Delete(reviewEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Review reviewEntity = _mapper.Map<Review>(reviewView);
-                reviewEntity = _unitOfWork.ReviewRepository.Insert(reviewEntity);
+                _unitOfWork.ReviewRepository.Insert(reviewEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<ReviewView>(reviewEntity);
             }

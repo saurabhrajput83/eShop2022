@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class ProductVariationLogic : IProductVariationLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductVariationLogic> _logger;
 
 
-        public ProductVariationLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductVariationLogic> logger)
+        public ProductVariationLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductVariationLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 ProductVariation productVariationEntity = _unitOfWork.ProductVariationRepository.GetByGuid(productVariationGuid);
                 if (productVariationEntity.IsNotNull())
                 {
-                    productVariationEntity = _unitOfWork.ProductVariationRepository.Delete(productVariationEntity);
+                    _unitOfWork.ProductVariationRepository.Delete(productVariationEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 ProductVariation productVariationEntity = _mapper.Map<ProductVariation>(productVariationView);
-                productVariationEntity = _unitOfWork.ProductVariationRepository.Insert(productVariationEntity);
+                _unitOfWork.ProductVariationRepository.Insert(productVariationEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<ProductVariationFullView>(productVariationEntity);
             }

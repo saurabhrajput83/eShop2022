@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class DepartmentLogic : IDepartmentLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<DepartmentLogic> _logger;
 
 
-        public DepartmentLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentLogic> logger)
+        public DepartmentLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Department departmentEntity = _unitOfWork.DepartmentRepository.GetByGuid(departmentGuid);
                 if (departmentEntity.IsNotNull())
                 {
-                    departmentEntity = _unitOfWork.DepartmentRepository.Delete(departmentEntity);
+                    _unitOfWork.DepartmentRepository.Delete(departmentEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Department departmentEntity = _mapper.Map<Department>(departmentView);
-                departmentEntity = _unitOfWork.DepartmentRepository.Insert(departmentEntity);
+                _unitOfWork.DepartmentRepository.Insert(departmentEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<DepartmentFullView>(departmentEntity);
             }

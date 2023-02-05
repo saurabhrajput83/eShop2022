@@ -5,8 +5,9 @@ using eShop.BLL.Dtos;
 using eShop.BLL.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
+using eShop.DAL.UnitOfWork;
 using eShop.Infrastructure;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class VariationLogic : IVariationLogic
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IeShopUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<VariationLogic> _logger;
 
 
-        public VariationLogic(IUnitOfWork unitOfWork, IMapper mapper, ILogger<VariationLogic> logger)
+        public VariationLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<VariationLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace eShop.BLL.Logics
                 Variation variationEntity = _unitOfWork.VariationRepository.GetByGuid(variationGuid);
                 if (variationEntity.IsNotNull())
                 {
-                    variationEntity = _unitOfWork.VariationRepository.Delete(variationEntity);
+                    _unitOfWork.VariationRepository.Delete(variationEntity);
                     _unitOfWork.SaveChanges();
                 }
             }
@@ -84,7 +85,7 @@ namespace eShop.BLL.Logics
             try
             {
                 Variation variationEntity = _mapper.Map<Variation>(variationView);
-                variationEntity = _unitOfWork.VariationRepository.Insert(variationEntity);
+                _unitOfWork.VariationRepository.Insert(variationEntity);
                 _unitOfWork.SaveChanges();
                 return _mapper.Map<VariationFullView>(variationEntity);
             }
