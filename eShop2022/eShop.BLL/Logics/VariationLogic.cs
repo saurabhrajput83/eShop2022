@@ -2,7 +2,7 @@
 using AutoMapper.Internal;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
 
@@ -22,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class VariationLogic : IVariationLogic
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<VariationLogic> _logger;
 
 
-        public VariationLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<VariationLogic> logger)
+        public VariationLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<VariationLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

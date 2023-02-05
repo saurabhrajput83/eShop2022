@@ -2,7 +2,7 @@
 using AutoMapper.Internal;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
 
@@ -22,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class BrandLogic : IBrandLogic
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<BrandLogic> _logger;
 
 
-        public BrandLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<BrandLogic> logger)
+        public BrandLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<BrandLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Brand brandEntity = _mapper.Map<BrandFullView, Brand>(brandView);
+                Brand brandEntity = _unitOfWork.BrandRepository.GetByGuid(brandView.Guid);
+                brandEntity = _mapper.Map<BrandFullView, Brand>(brandView, brandEntity);
                 _unitOfWork.BrandRepository.Update(brandEntity);
                 _unitOfWork.SaveChanges();
             }

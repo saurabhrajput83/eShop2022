@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShop.BLL.Interfaces
+namespace eShop.BLL.Logics.Interfaces
 {
-    public interface IReviewLogic : IBaseLogic<ReviewView, ReviewView>
+    public interface IDepartmentProductLogic : IBaseLogic<DepartmentProductFullView, DepartmentProductMinimalView>
     {
 
     }

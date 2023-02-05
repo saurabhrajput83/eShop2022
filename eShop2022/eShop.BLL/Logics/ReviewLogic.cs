@@ -2,7 +2,7 @@
 using AutoMapper.Internal;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
 
@@ -22,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class ReviewLogic : IReviewLogic
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<ReviewLogic> _logger;
 
 
-        public ReviewLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<ReviewLogic> logger)
+        public ReviewLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<ReviewLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

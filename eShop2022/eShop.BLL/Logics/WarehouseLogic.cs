@@ -2,7 +2,7 @@
 using AutoMapper.Internal;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
 
@@ -22,12 +22,12 @@ namespace eShop.BLL.Logics
 {
     public class WarehouseLogic : IWarehouseLogic
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<WarehouseLogic> _logger;
 
 
-        public WarehouseLogic(IeShopUnitOfWork unitOfWork, IMapper mapper, ILogger<WarehouseLogic> logger)
+        public WarehouseLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<WarehouseLogic> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;

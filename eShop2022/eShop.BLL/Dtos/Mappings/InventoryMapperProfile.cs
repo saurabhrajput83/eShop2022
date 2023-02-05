@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShop.BLL.Dtos
+namespace eShop.BLL.Dtos.Mappings
 {
-    public class BrandMapperProfile : Profile
+    public class InventoryMapperProfile : Profile
     {
-        public BrandMapperProfile()
+        public InventoryMapperProfile()
         {
-            CreateMap<BrandFullView, Brand>()
+            CreateMap<InventoryFullView, Inventory>()
                     .ReverseMap();
-            CreateMap<BrandMinimalView, Brand>()
+            CreateMap<InventoryMinimalView, Inventory>()
                    .ReverseMap();
         }
     }

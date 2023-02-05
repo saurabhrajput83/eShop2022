@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace eShop.BLL.Interfaces
+namespace eShop.BLL.Logics.Interfaces
 {
-    public interface IVariationLogic : IBaseLogic<VariationFullView, VariationMinimalView>
+    public interface IInventoryLogic : IBaseLogic<InventoryFullView, InventoryMinimalView>
     {
 
     }
