@@ -1,5 +1,6 @@
 ﻿using eShop.DAL.Entities;
 using eShop.DAL.Entities.Configurations;
+using eShop.DAL.Helpers;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,10 +20,7 @@ namespace eShop.DAL.Main
 
         public eShopDbContext()
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder()
-               .SetBasePath(Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", false, true);
-            Configuration = builder.Build();
+
         }
 
         public eShopDbContext(DbContextOptions<eShopDbContext> options) : base(options)
@@ -50,12 +48,12 @@ namespace eShop.DAL.Main
             base.OnModelCreating(modelBuilder);
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("eShopDatabase"));
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(ConfigurationHelper.Configuration.GetConnectionString("eShopDatabase"));
 
-            base.OnConfiguring(optionsBuilder);
-        }
+        //    base.OnConfiguring(optionsBuilder);
+        //}
 
         public virtual DbSet<Brand> Brands { get; set; }
         public virtual DbSet<Department> Departments { get; set; }

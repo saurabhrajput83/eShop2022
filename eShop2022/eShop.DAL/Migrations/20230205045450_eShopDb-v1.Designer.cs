@@ -12,7 +12,7 @@ using eShop.DAL.Main;
 namespace eShop.DAL.Migrations
 {
     [DbContext(typeof(eShopDbContext))]
-    [Migration("20230205034038_eShopDb-v1")]
+    [Migration("20230205045450_eShopDb-v1")]
     partial class eShopDbv1
     {
         /// <inheritdoc />
