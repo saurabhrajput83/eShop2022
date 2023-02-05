@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class ProductVariationLogic : IProductVariationLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductVariationLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public ProductVariationLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductVariationLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid productVariationGuid)
+        public async Task DeleteAsync(Guid productVariationGuid)
         {
             try
             {
-                ProductVariation productVariationEntity = _unitOfWork.ProductVariationRepository.GetByGuid(productVariationGuid);
+                ProductVariation productVariationEntity = await _unitOfWork.ProductVariationRepository.GetByGuidAsync(productVariationGuid, _token);
                 if (productVariationEntity.IsNotNull())
                 {
-                    _unitOfWork.ProductVariationRepository.Delete(productVariationEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.ProductVariationRepository.Delete(productVariationEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<ProductVariationMinimalView> GetAll()
+        public async Task<List<ProductVariationMinimalView>> GetAllAsync()
         {
             try
             {
-                List<ProductVariation> result = _unitOfWork.ProductVariationRepository.GetAll().ToList();
+                List<ProductVariation> result = await _unitOfWork.ProductVariationRepository.GetAllAsync(_token);
                 return _mapper.Map<List<ProductVariationMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductVariationFullView GetByGuid(Guid productVariationGuid)
+        public async Task<ProductVariationFullView> GetByGuidAsync(Guid productVariationGuid)
         {
             try
             {
-                ProductVariation productVariationEntity = _unitOfWork.ProductVariationRepository.GetByGuid(productVariationGuid);
+                ProductVariation productVariationEntity = await _unitOfWork.ProductVariationRepository.GetByGuidAsync(productVariationGuid, _token);
                 return _mapper.Map<ProductVariationFullView>(productVariationEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductVariationFullView Insert(ProductVariationFullView productVariationView)
+        public async Task<ProductVariationFullView> InsertAsync(ProductVariationFullView productVariationView)
         {
             try
             {
                 ProductVariation productVariationEntity = _mapper.Map<ProductVariation>(productVariationView);
-                _unitOfWork.ProductVariationRepository.Insert(productVariationEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.ProductVariationRepository.InsertAsync(productVariationEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<ProductVariationFullView>(productVariationEntity);
             }
             catch (Exception ex)
@@ -96,13 +98,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(ProductVariationFullView productVariationView)
+        public async Task UpdateAsync(ProductVariationFullView productVariationView)
         {
             try
             {
                 ProductVariation productVariationEntity = _mapper.Map<ProductVariationFullView, ProductVariation>(productVariationView);
-                _unitOfWork.ProductVariationRepository.Update(productVariationEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.ProductVariationRepository.Update(productVariationEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

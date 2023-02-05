@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class InventoryLogic : IInventoryLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<InventoryLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public InventoryLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<InventoryLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid inventoryGuid)
+        public async Task DeleteAsync(Guid inventoryGuid)
         {
             try
             {
-                Inventory inventoryEntity = _unitOfWork.InventoryRepository.GetByGuid(inventoryGuid);
+                Inventory inventoryEntity = await _unitOfWork.InventoryRepository.GetByGuidAsync(inventoryGuid, _token);
                 if (inventoryEntity.IsNotNull())
                 {
-                    _unitOfWork.InventoryRepository.Delete(inventoryEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.InventoryRepository.Delete(inventoryEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<InventoryMinimalView> GetAll()
+        public async Task<List<InventoryMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Inventory> result = _unitOfWork.InventoryRepository.GetAll().ToList();
+                List<Inventory> result = await _unitOfWork.InventoryRepository.GetAllAsync(_token);
                 return _mapper.Map<List<InventoryMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public InventoryFullView GetByGuid(Guid inventoryGuid)
+        public async Task<InventoryFullView> GetByGuidAsync(Guid inventoryGuid)
         {
             try
             {
-                Inventory inventoryEntity = _unitOfWork.InventoryRepository.GetByGuid(inventoryGuid);
+                Inventory inventoryEntity = await _unitOfWork.InventoryRepository.GetByGuidAsync(inventoryGuid, _token);
                 return _mapper.Map<InventoryFullView>(inventoryEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public InventoryFullView Insert(InventoryFullView inventoryView)
+        public async Task<InventoryFullView> InsertAsync(InventoryFullView inventoryView)
         {
             try
             {
                 Inventory inventoryEntity = _mapper.Map<Inventory>(inventoryView);
-                _unitOfWork.InventoryRepository.Insert(inventoryEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.InventoryRepository.InsertAsync(inventoryEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<InventoryFullView>(inventoryEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(InventoryFullView inventoryView)
+        public async Task UpdateAsync(InventoryFullView inventoryView)
         {
             try
             {
-                Inventory inventoryEntity = _unitOfWork.InventoryRepository.GetByGuid(inventoryView.Guid);
+                Inventory inventoryEntity = await _unitOfWork.InventoryRepository.GetByGuidAsync(inventoryView.Guid, _token);
                 inventoryEntity = _mapper.Map<InventoryFullView, Inventory>(inventoryView, inventoryEntity);
-                _unitOfWork.InventoryRepository.Update(inventoryEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.InventoryRepository.Update(inventoryEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

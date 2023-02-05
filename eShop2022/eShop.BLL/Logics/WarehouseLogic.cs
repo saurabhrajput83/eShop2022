@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class WarehouseLogic : IWarehouseLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<WarehouseLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public WarehouseLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<WarehouseLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid warehouseGuid)
+        public async Task DeleteAsync(Guid warehouseGuid)
         {
             try
             {
-                Warehouse warehouseEntity = _unitOfWork.WarehouseRepository.GetByGuid(warehouseGuid);
+                Warehouse warehouseEntity = await _unitOfWork.WarehouseRepository.GetByGuidAsync(warehouseGuid, _token);
                 if (warehouseEntity.IsNotNull())
                 {
-                    _unitOfWork.WarehouseRepository.Delete(warehouseEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.WarehouseRepository.Delete(warehouseEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<WarehouseMinimalView> GetAll()
+        public async Task<List<WarehouseMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Warehouse> result = _unitOfWork.WarehouseRepository.GetAll().ToList();
+                List<Warehouse> result = await _unitOfWork.WarehouseRepository.GetAllAsync(_token);
                 return _mapper.Map<List<WarehouseMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public WarehouseFullView GetByGuid(Guid warehouseGuid)
+        public async Task<WarehouseFullView> GetByGuidAsync(Guid warehouseGuid)
         {
             try
             {
-                Warehouse warehouseEntity = _unitOfWork.WarehouseRepository.GetByGuid(warehouseGuid);
+                Warehouse warehouseEntity = await _unitOfWork.WarehouseRepository.GetByGuidAsync(warehouseGuid, _token);
                 return _mapper.Map<WarehouseFullView>(warehouseEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public WarehouseFullView Insert(WarehouseFullView warehouseView)
+        public async Task<WarehouseFullView> InsertAsync(WarehouseFullView warehouseView)
         {
             try
             {
                 Warehouse warehouseEntity = _mapper.Map<Warehouse>(warehouseView);
-                _unitOfWork.WarehouseRepository.Insert(warehouseEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.WarehouseRepository.InsertAsync(warehouseEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<WarehouseFullView>(warehouseEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(WarehouseFullView warehouseView)
+        public async Task UpdateAsync(WarehouseFullView warehouseView)
         {
             try
             {
-                Warehouse warehouseEntity = _unitOfWork.WarehouseRepository.GetByGuid(warehouseView.Guid);
+                Warehouse warehouseEntity = await _unitOfWork.WarehouseRepository.GetByGuidAsync(warehouseView.Guid, _token);
                 warehouseEntity = _mapper.Map<WarehouseFullView, Warehouse>(warehouseView, warehouseEntity);
-                _unitOfWork.WarehouseRepository.Update(warehouseEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.WarehouseRepository.Update(warehouseEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

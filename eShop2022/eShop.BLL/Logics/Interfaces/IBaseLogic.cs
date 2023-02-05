@@ -8,10 +8,10 @@ namespace eShop.BLL.Logics.Interfaces
 {
     public interface IBaseLogic<TFullView, TMinimalView> where TFullView : class
     {
-        List<TMinimalView> GetAll();
-        TFullView GetByGuid(Guid guid);
-        TFullView Insert(TFullView entity);
-        void Update(TFullView entity);
-        void Delete(Guid guid);
+        Task<List<TMinimalView>> GetAllAsync();
+        Task<TFullView> GetByGuidAsync(Guid guid);
+        Task<TFullView> InsertAsync(TFullView entity);
+        Task UpdateAsync(TFullView entity);
+        Task DeleteAsync(Guid guid);
     }
 }

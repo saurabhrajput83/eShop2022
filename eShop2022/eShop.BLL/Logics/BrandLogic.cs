@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class BrandLogic : IBrandLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<BrandLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public BrandLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<BrandLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid brandGuid)
+        public async Task DeleteAsync(Guid brandGuid)
         {
             try
             {
-                Brand brandEntity = _unitOfWork.BrandRepository.GetByGuid(brandGuid);
+                Brand brandEntity = await _unitOfWork.BrandRepository.GetByGuidAsync(brandGuid, _token);
                 if (brandEntity.IsNotNull())
                 {
-                    _unitOfWork.BrandRepository.Delete(brandEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.BrandRepository.Delete(brandEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<BrandMinimalView> GetAll()
+        public async Task<List<BrandMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Brand> result = _unitOfWork.BrandRepository.GetAll().ToList();
+                List<Brand> result = await _unitOfWork.BrandRepository.GetAllAsync(_token);
                 return _mapper.Map<List<BrandMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public BrandFullView GetByGuid(Guid brandGuid)
+        public async Task<BrandFullView> GetByGuidAsync(Guid brandGuid)
         {
             try
             {
-                Brand brandEntity = _unitOfWork.BrandRepository.GetByGuid(brandGuid);
+                Brand brandEntity = await _unitOfWork.BrandRepository.GetByGuidAsync(brandGuid, _token);
                 return _mapper.Map<BrandFullView>(brandEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public BrandFullView Insert(BrandFullView brandView)
+        public async Task<BrandFullView> InsertAsync(BrandFullView brandView)
         {
             try
             {
                 Brand brandEntity = _mapper.Map<Brand>(brandView);
-                _unitOfWork.BrandRepository.Insert(brandEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.BrandRepository.InsertAsync(brandEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<BrandFullView>(brandEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(BrandFullView brandView)
+        public async Task UpdateAsync(BrandFullView brandView)
         {
             try
             {
-                Brand brandEntity = _unitOfWork.BrandRepository.GetByGuid(brandView.Guid);
+                Brand brandEntity = await _unitOfWork.BrandRepository.GetByGuidAsync(brandView.Guid, _token);
                 brandEntity = _mapper.Map<BrandFullView, Brand>(brandView, brandEntity);
-                _unitOfWork.BrandRepository.Update(brandEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.BrandRepository.Update(brandEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class DepartmentLogic : IDepartmentLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<DepartmentLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public DepartmentLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid departmentGuid)
+        public async Task DeleteAsync(Guid departmentGuid)
         {
             try
             {
-                Department departmentEntity = _unitOfWork.DepartmentRepository.GetByGuid(departmentGuid);
+                Department departmentEntity = await _unitOfWork.DepartmentRepository.GetByGuidAsync(departmentGuid, _token);
                 if (departmentEntity.IsNotNull())
                 {
-                    _unitOfWork.DepartmentRepository.Delete(departmentEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.DepartmentRepository.Delete(departmentEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<DepartmentMinimalView> GetAll()
+        public async Task<List<DepartmentMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Department> result = _unitOfWork.DepartmentRepository.GetAll().ToList();
+                List<Department> result = await _unitOfWork.DepartmentRepository.GetAllAsync(_token);
                 return _mapper.Map<List<DepartmentMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public DepartmentFullView GetByGuid(Guid departmentGuid)
+        public async Task<DepartmentFullView> GetByGuidAsync(Guid departmentGuid)
         {
             try
             {
-                Department departmentEntity = _unitOfWork.DepartmentRepository.GetByGuid(departmentGuid);
+                Department departmentEntity = await _unitOfWork.DepartmentRepository.GetByGuidAsync(departmentGuid, _token);
                 return _mapper.Map<DepartmentFullView>(departmentEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public DepartmentFullView Insert(DepartmentFullView departmentView)
+        public async Task<DepartmentFullView> InsertAsync(DepartmentFullView departmentView)
         {
             try
             {
                 Department departmentEntity = _mapper.Map<Department>(departmentView);
-                _unitOfWork.DepartmentRepository.Insert(departmentEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.DepartmentRepository.InsertAsync(departmentEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<DepartmentFullView>(departmentEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(DepartmentFullView departmentView)
+        public async Task UpdateAsync(DepartmentFullView departmentView)
         {
             try
             {
-                Department departmentEntity = _unitOfWork.DepartmentRepository.GetByGuid(departmentView.Guid);
+                Department departmentEntity = await _unitOfWork.DepartmentRepository.GetByGuidAsync(departmentView.Guid, _token);
                 departmentEntity = _mapper.Map<DepartmentFullView, Department>(departmentView, departmentEntity);
-                _unitOfWork.DepartmentRepository.Update(departmentEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.DepartmentRepository.Update(departmentEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

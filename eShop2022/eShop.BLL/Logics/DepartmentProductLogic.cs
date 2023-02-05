@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class DepartmentProductLogic : IDepartmentProductLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<DepartmentProductLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public DepartmentProductLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<DepartmentProductLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid departmentProductGuid)
+        public async Task DeleteAsync(Guid departmentProductGuid)
         {
             try
             {
-                DepartmentProduct departmentProductEntity = _unitOfWork.DepartmentProductRepository.GetByGuid(departmentProductGuid);
+                DepartmentProduct departmentProductEntity = await _unitOfWork.DepartmentProductRepository.GetByGuidAsync(departmentProductGuid, _token);
                 if (departmentProductEntity.IsNotNull())
                 {
-                    _unitOfWork.DepartmentProductRepository.Delete(departmentProductEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.DepartmentProductRepository.Delete(departmentProductEntity, _token);
+                    _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<DepartmentProductMinimalView> GetAll()
+        public async Task<List<DepartmentProductMinimalView>> GetAllAsync()
         {
             try
             {
-                List<DepartmentProduct> result = _unitOfWork.DepartmentProductRepository.GetAll().ToList();
+                List<DepartmentProduct> result = await _unitOfWork.DepartmentProductRepository.GetAllAsync(_token);
                 return _mapper.Map<List<DepartmentProductMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public DepartmentProductFullView GetByGuid(Guid departmentProductGuid)
+        public async Task<DepartmentProductFullView> GetByGuidAsync(Guid departmentProductGuid)
         {
             try
             {
-                DepartmentProduct departmentProductEntity = _unitOfWork.DepartmentProductRepository.GetByGuid(departmentProductGuid);
+                DepartmentProduct departmentProductEntity = await _unitOfWork.DepartmentProductRepository.GetByGuidAsync(departmentProductGuid, _token);
                 return _mapper.Map<DepartmentProductFullView>(departmentProductEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public DepartmentProductFullView Insert(DepartmentProductFullView departmentProductView)
+        public async Task<DepartmentProductFullView> InsertAsync(DepartmentProductFullView departmentProductView)
         {
             try
             {
                 DepartmentProduct departmentProductEntity = _mapper.Map<DepartmentProduct>(departmentProductView);
-                _unitOfWork.DepartmentProductRepository.Insert(departmentProductEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.DepartmentProductRepository.InsertAsync(departmentProductEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<DepartmentProductFullView>(departmentProductEntity);
             }
             catch (Exception ex)
@@ -96,13 +98,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(DepartmentProductFullView departmentProductView)
+        public async Task UpdateAsync(DepartmentProductFullView departmentProductView)
         {
             try
             {
                 DepartmentProduct departmentProductEntity = _mapper.Map<DepartmentProductFullView, DepartmentProduct>(departmentProductView);
-                _unitOfWork.DepartmentProductRepository.Update(departmentProductEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.DepartmentProductRepository.Update(departmentProductEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class VariationLogic : IVariationLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<VariationLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public VariationLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<VariationLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid variationGuid)
+        public async Task DeleteAsync(Guid variationGuid)
         {
             try
             {
-                Variation variationEntity = _unitOfWork.VariationRepository.GetByGuid(variationGuid);
+                Variation variationEntity = await _unitOfWork.VariationRepository.GetByGuidAsync(variationGuid, _token);
                 if (variationEntity.IsNotNull())
                 {
-                    _unitOfWork.VariationRepository.Delete(variationEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.VariationRepository.Delete(variationEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<VariationMinimalView> GetAll()
+        public async Task<List<VariationMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Variation> result = _unitOfWork.VariationRepository.GetAll().ToList();
+                List<Variation> result = await _unitOfWork.VariationRepository.GetAllAsync(_token);
                 return _mapper.Map<List<VariationMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public VariationFullView GetByGuid(Guid variationGuid)
+        public async Task<VariationFullView> GetByGuidAsync(Guid variationGuid)
         {
             try
             {
-                Variation variationEntity = _unitOfWork.VariationRepository.GetByGuid(variationGuid);
+                Variation variationEntity = await _unitOfWork.VariationRepository.GetByGuidAsync(variationGuid, _token);
                 return _mapper.Map<VariationFullView>(variationEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public VariationFullView Insert(VariationFullView variationView)
+        public async Task<VariationFullView> InsertAsync(VariationFullView variationView)
         {
             try
             {
                 Variation variationEntity = _mapper.Map<Variation>(variationView);
-                _unitOfWork.VariationRepository.Insert(variationEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.VariationRepository.InsertAsync(variationEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<VariationFullView>(variationEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(VariationFullView variationView)
+        public async Task UpdateAsync(VariationFullView variationView)
         {
             try
             {
-                Variation variationEntity = _unitOfWork.VariationRepository.GetByGuid(variationView.Guid);
+                Variation variationEntity = await _unitOfWork.VariationRepository.GetByGuidAsync(variationView.Guid, _token);
                 variationEntity = _mapper.Map<VariationFullView, Variation>(variationView, variationEntity);
-                _unitOfWork.VariationRepository.Update(variationEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.VariationRepository.Update(variationEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

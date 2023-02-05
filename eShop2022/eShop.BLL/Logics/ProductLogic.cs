@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class ProductLogic : IProductLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public ProductLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid productGuid)
+        public async Task DeleteAsync(Guid productGuid)
         {
             try
             {
-                Product productEntity = _unitOfWork.ProductRepository.GetByGuid(productGuid);
+                Product productEntity = await _unitOfWork.ProductRepository.GetByGuidAsync(productGuid, _token);
                 if (productEntity.IsNotNull())
                 {
-                    _unitOfWork.ProductRepository.Delete(productEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.ProductRepository.Delete(productEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<ProductMinimalView> GetAll()
+        public async Task<List<ProductMinimalView>> GetAllAsync()
         {
             try
             {
-                List<Product> result = _unitOfWork.ProductRepository.GetAll().ToList();
+                List<Product> result = await _unitOfWork.ProductRepository.GetAllAsync(_token);
                 return _mapper.Map<List<ProductMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductFullView GetByGuid(Guid productGuid)
+        public async Task<ProductFullView> GetByGuidAsync(Guid productGuid)
         {
             try
             {
-                Product productEntity = _unitOfWork.ProductRepository.GetByGuid(productGuid);
+                Product productEntity = await _unitOfWork.ProductRepository.GetByGuidAsync(productGuid, _token);
                 return _mapper.Map<ProductFullView>(productEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductFullView Insert(ProductFullView productView)
+        public async Task<ProductFullView> InsertAsync(ProductFullView productView)
         {
             try
             {
                 Product productEntity = _mapper.Map<Product>(productView);
-                _unitOfWork.ProductRepository.Insert(productEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.ProductRepository.InsertAsync(productEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<ProductFullView>(productEntity);
             }
             catch (Exception ex)
@@ -96,14 +98,14 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(ProductFullView productView)
+        public async Task UpdateAsync(ProductFullView productView)
         {
             try
             {
-                Product productEntity = _unitOfWork.ProductRepository.GetByGuid(productView.Guid);
+                Product productEntity = await _unitOfWork.ProductRepository.GetByGuidAsync(productView.Guid, _token);
                 productEntity = _mapper.Map<ProductFullView, Product>(productView, productEntity);
-                _unitOfWork.ProductRepository.Update(productEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.ProductRepository.Update(productEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

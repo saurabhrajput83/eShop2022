@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class ProductImageLogic : IProductImageLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<ProductImageLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public ProductImageLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductImageLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid productImageGuid)
+        public async Task DeleteAsync(Guid productImageGuid)
         {
             try
             {
-                ProductImage productImageEntity = _unitOfWork.ProductImageRepository.GetByGuid(productImageGuid);
+                ProductImage productImageEntity = await _unitOfWork.ProductImageRepository.GetByGuidAsync(productImageGuid, _token);
                 if (productImageEntity.IsNotNull())
                 {
-                    _unitOfWork.ProductImageRepository.Delete(productImageEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.ProductImageRepository.Delete(productImageEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<ProductImageView> GetAll()
+        public async Task<List<ProductImageView>> GetAllAsync()
         {
             try
             {
-                List<ProductImage> result = _unitOfWork.ProductImageRepository.GetAll().ToList();
+                List<ProductImage> result = await _unitOfWork.ProductImageRepository.GetAllAsync(_token);
                 return _mapper.Map<List<ProductImageView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductImageView GetByGuid(Guid productImageGuid)
+        public async Task<ProductImageView> GetByGuidAsync(Guid productImageGuid)
         {
             try
             {
-                ProductImage productImageEntity = _unitOfWork.ProductImageRepository.GetByGuid(productImageGuid);
+                ProductImage productImageEntity = await _unitOfWork.ProductImageRepository.GetByGuidAsync(productImageGuid, _token);
                 return _mapper.Map<ProductImageView>(productImageEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public ProductImageView Insert(ProductImageView productImageView)
+        public async Task<ProductImageView> InsertAsync(ProductImageView productImageView)
         {
             try
             {
                 ProductImage productImageEntity = _mapper.Map<ProductImage>(productImageView);
-                _unitOfWork.ProductImageRepository.Insert(productImageEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.ProductImageRepository.InsertAsync(productImageEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<ProductImageView>(productImageEntity);
             }
             catch (Exception ex)
@@ -96,13 +98,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(ProductImageView productImageView)
+        public async Task UpdateAsync(ProductImageView productImageView)
         {
             try
             {
                 ProductImage productImageEntity = _mapper.Map<ProductImageView, ProductImage>(productImageView);
-                _unitOfWork.ProductImageRepository.Update(productImageEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.ProductImageRepository.Update(productImageEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {

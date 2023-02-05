@@ -23,6 +23,7 @@ namespace eShop.BLL.Logics
     public class SelectedItemLogic : ISelectedItemLogic
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly IMapper _mapper;
         private readonly ILogger<SelectedItemLogic> _logger;
 
@@ -30,19 +31,20 @@ namespace eShop.BLL.Logics
         public SelectedItemLogic(IAppUnitOfWork unitOfWork, IMapper mapper, ILogger<SelectedItemLogic> logger)
         {
             _unitOfWork = unitOfWork;
+            _token = new CancellationToken();
             _mapper = mapper;
             _logger = logger;
         }
 
-        public void Delete(Guid selectedItemGuid)
+        public async Task DeleteAsync(Guid selectedItemGuid)
         {
             try
             {
-                SelectedItem selectedItemEntity = _unitOfWork.SelectedItemRepository.GetByGuid(selectedItemGuid);
+                SelectedItem selectedItemEntity = await _unitOfWork.SelectedItemRepository.GetByGuidAsync(selectedItemGuid, _token);
                 if (selectedItemEntity.IsNotNull())
                 {
-                    _unitOfWork.SelectedItemRepository.Delete(selectedItemEntity);
-                    _unitOfWork.SaveChanges();
+                    _unitOfWork.SelectedItemRepository.Delete(selectedItemEntity, _token);
+                    await _unitOfWork.SaveChangesAsync(_token);
                 }
             }
             catch (Exception ex)
@@ -52,11 +54,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public List<SelectedItemMinimalView> GetAll()
+        public async Task<List<SelectedItemMinimalView>> GetAllAsync()
         {
             try
             {
-                List<SelectedItem> result = _unitOfWork.SelectedItemRepository.GetAll().ToList();
+                List<SelectedItem> result = await _unitOfWork.SelectedItemRepository.GetAllAsync(_token);
                 return _mapper.Map<List<SelectedItemMinimalView>>(result);
             }
             catch (Exception ex)
@@ -66,11 +68,11 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public SelectedItemFullView GetByGuid(Guid selectedItemGuid)
+        public async Task<SelectedItemFullView> GetByGuidAsync(Guid selectedItemGuid)
         {
             try
             {
-                SelectedItem selectedItemEntity = _unitOfWork.SelectedItemRepository.GetByGuid(selectedItemGuid);
+                SelectedItem selectedItemEntity = await _unitOfWork.SelectedItemRepository.GetByGuidAsync(selectedItemGuid, _token);
                 return _mapper.Map<SelectedItemFullView>(selectedItemEntity);
             }
             catch (Exception ex)
@@ -80,13 +82,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public SelectedItemFullView Insert(SelectedItemFullView selectedItemView)
+        public async Task<SelectedItemFullView> InsertAsync(SelectedItemFullView selectedItemView)
         {
             try
             {
                 SelectedItem selectedItemEntity = _mapper.Map<SelectedItem>(selectedItemView);
-                _unitOfWork.SelectedItemRepository.Insert(selectedItemEntity);
-                _unitOfWork.SaveChanges();
+                await _unitOfWork.SelectedItemRepository.InsertAsync(selectedItemEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
                 return _mapper.Map<SelectedItemFullView>(selectedItemEntity);
             }
             catch (Exception ex)
@@ -96,13 +98,13 @@ namespace eShop.BLL.Logics
             }
         }
 
-        public void Update(SelectedItemFullView selectedItemView)
+        public async Task UpdateAsync(SelectedItemFullView selectedItemView)
         {
             try
             {
                 SelectedItem selectedItemEntity = _mapper.Map<SelectedItemFullView, SelectedItem>(selectedItemView);
-                _unitOfWork.SelectedItemRepository.Update(selectedItemEntity);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.SelectedItemRepository.Update(selectedItemEntity, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
             catch (Exception ex)
             {
