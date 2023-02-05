@@ -21,61 +21,61 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Department> GetAll()
+        public async Task<List<Department>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Departments
+            IQueryable<Department> results = _dbContext.Departments
+                   .Include(x => x.Parent);
+            return await results.ToListAsync(token);
+        }
+
+        //public IEnumerable<Department> GetAllActive(CancellationToken token)
+        //{
+        //    return _dbContext.Departments
+        //           .Include(x => x.Parent)
+        //           .Where(x => x.IsHidden == false)
+        //           .AsEnumerable();
+        //}
+
+        //public IEnumerable<Department> GetAllTopLevelDepartments()
+        //{
+        //    return _dbContext.Departments
+        //           //.Include(x => x.Parent)
+        //           .Where(x => x.ParentId == null)
+        //           .AsEnumerable();
+        //}
+
+        //public IEnumerable<Department> GetByParentId(int parentId)
+        //{
+        //    return _dbContext.Departments
+        //        .Include(x => x.Parent)
+        //        .Where(x => x.ParentId == parentId)
+        //        .AsEnumerable();
+        //}
+
+
+        public async Task<Department> GetByGuidAsync(Guid guid, CancellationToken token)
+        {
+            return await _dbContext.Departments
                    .Include(x => x.Parent)
-                   .AsEnumerable();
-        }
-
-        public IEnumerable<Department> GetAllActive()
-        {
-            return _dbContext.Departments
-                   .Include(x => x.Parent)
-                   .Where(x => x.IsHidden == false)
-                   .AsEnumerable();
-        }
-
-        public IEnumerable<Department> GetAllTopLevelDepartments()
-        {
-            return _dbContext.Departments
-                   //.Include(x => x.Parent)
-                   .Where(x => x.ParentId == null)
-                   .AsEnumerable();
-        }
-
-        public IEnumerable<Department> GetByParentId(int parentId)
-        {
-            return _dbContext.Departments
-                .Include(x => x.Parent)
-                .Where(x => x.ParentId == parentId)
-                .AsEnumerable();
+                   .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
 
-        public Department GetByGuid(Guid guid)
-        {
-            return _dbContext.Departments
-                   .Include(x => x.Parent)
-                   .FirstOrDefault(p => p.Guid == guid);
-        }
-
-
-        public void Insert(Department entity)
+        public async Task InsertAsync(Department entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.Departments
-                 .Add(entity);
+            await _dbContext.Departments
+                   .AddAsync(entity, token);
         }
 
-        public void Delete(Department entity)
+        public void Delete(Department entity, CancellationToken token)
         {
             _dbContext.Departments
                 .Remove(entity);
         }
 
-        public void Update(Department entity)
+        public void Update(Department entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

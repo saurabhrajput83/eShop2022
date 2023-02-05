@@ -21,32 +21,33 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<ShoppingCart> GetAll()
+        public async Task<List<ShoppingCart>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.ShoppingCarts.AsEnumerable();
+            IQueryable<ShoppingCart> results = _dbContext.ShoppingCarts;
+            return await results.ToListAsync(token);
         }
 
-        public ShoppingCart GetByGuid(Guid guid)
+        public async Task<ShoppingCart> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.ShoppingCarts
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.ShoppingCarts
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public void Insert(ShoppingCart entity)
+        public async Task InsertAsync(ShoppingCart entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.ShoppingCarts
-                 .Add(entity);
+            await _dbContext.ShoppingCarts
+                 .AddAsync(entity, token);
         }
 
-        public void Delete(ShoppingCart entity)
+        public void Delete(ShoppingCart entity, CancellationToken token)
         {
             _dbContext.ShoppingCarts
                  .Remove(entity);
         }
 
-        public void Update(ShoppingCart entity)
+        public void Update(ShoppingCart entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

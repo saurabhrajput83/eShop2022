@@ -9,8 +9,8 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IDepartmentRepository : IBaseRepository<Department>
     {
-        IEnumerable<Department> GetAllTopLevelDepartments();
+        //IEnumerable<Department> GetAllTopLevelDepartments();
 
-        IEnumerable<Department> GetByParentId(int parentId);
+        //IEnumerable<Department> GetByParentId(int parentId);
     }
 }

@@ -22,59 +22,59 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Product> GetAll()
+        public async Task<List<Product>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Products
+            IQueryable<Product> results = _dbContext.Products
+                .Include(x => x.Brand);
+            return await results.ToListAsync(token);
+        }
+
+        //public IEnumerable<Product> GetAllActive()
+        //{
+        //    return _dbContext.Products
+        //        .Where(x => x.IsHidden == false)
+        //        .AsEnumerable();
+        //}
+
+        //public IEnumerable<Product> GetAllFeaturedProducts()
+        //{
+        //    return _dbContext.Products
+        //        .Include(x => x.Brand)
+        //        .Where(x => x.IsFeatured == true && x.IsActive == true)
+        //        .AsEnumerable();
+        //}
+
+        //public IEnumerable<Product> GetAllNewProducts()
+        //{
+        //    return _dbContext.Products
+        //         .Include(x => x.Brand)
+        //         .Where(x => x.IsActive == true)
+        //         .OrderByDescending(x => x.Id)
+        //         .AsEnumerable();
+        //}
+
+        public async Task<Product> GetByGuidAsync(Guid guid, CancellationToken token)
+        {
+            return await _dbContext.Products
                 .Include(x => x.Brand)
-                .AsEnumerable();
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public IEnumerable<Product> GetAllActive()
-        {
-            return _dbContext.Products
-                .Where(x => x.IsHidden == false)
-                .AsEnumerable();
-        }
-
-        public IEnumerable<Product> GetAllFeaturedProducts()
-        {
-            return _dbContext.Products
-                .Include(x => x.Brand)
-                .Where(x => x.IsFeatured == true && x.IsActive == true)
-                .AsEnumerable();
-        }
-
-        public IEnumerable<Product> GetAllNewProducts()
-        {
-            return _dbContext.Products
-                 .Include(x => x.Brand)
-                 .Where(x => x.IsActive == true)
-                 .OrderByDescending(x => x.Id)
-                 .AsEnumerable();
-        }
-
-        public Product GetByGuid(Guid guid)
-        {
-            return _dbContext.Products
-                .Include(x => x.Brand)
-                .FirstOrDefault(p => p.Guid == guid);
-        }
-
-        public void Insert(Product entity)
+        public async Task InsertAsync(Product entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.Products
-                .Add(entity);
+            await _dbContext.Products
+                .AddAsync(entity, token);
         }
 
-        public void Delete(Product entity)
+        public void Delete(Product entity, CancellationToken token)
         {
             _dbContext.Products
                 .Remove(entity);
         }
 
-        public void Update(Product entity)
+        public void Update(Product entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

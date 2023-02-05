@@ -21,37 +21,38 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Brand> GetAll()
+        public async Task<List<Brand>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Brands
-                .AsEnumerable();
+            IQueryable<Brand> results = _dbContext.Brands;
+            return await results.ToListAsync(token);
+
         }
 
-        public Brand GetByGuid(Guid guid)
+        public async Task<Brand> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.Brands
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.Brands
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
 
-        public void Insert(Brand entity)
+        public async Task InsertAsync(Brand entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.Brands
-               .Add(entity);
+            await _dbContext.Brands
+                 .AddAsync(entity, token);
         }
 
-        public void Delete(Brand entity)
+        public void Delete(Brand entity, CancellationToken token)
         {
             _dbContext.Brands
                  .Remove(entity);
         }
 
-        public void Update(Brand entity)
+        public void Update(Brand entity, CancellationToken token)
         {
             _dbContext.Brands
-                .Update(entity);
+              .Update(entity);
         }
     }
 }

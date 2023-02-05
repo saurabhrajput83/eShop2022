@@ -23,6 +23,6 @@ namespace eShop.DAL.UnitOfWork
         IVariationTypeRepository VariationTypeRepository { get; }
         IVariationRepository VariationRepository { get; }
         IWarehouseRepository WarehouseRepository { get; }
-        void SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken token);
     }
 }

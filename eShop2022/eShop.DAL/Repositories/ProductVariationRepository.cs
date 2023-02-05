@@ -21,41 +21,42 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<ProductVariation> GetAll()
+        public async Task<List<ProductVariation>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.ProductVariations
-                .Include(x => x.Variation)
-                .AsEnumerable();
+            IQueryable<ProductVariation> results = _dbContext.ProductVariations
+                .Include(x => x.Variation);
+            return await results.ToListAsync(token);
         }
 
-        public ProductVariation GetByGuid(Guid guid)
+        public async Task<ProductVariation> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.ProductVariations
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.ProductVariations
+                  .Include(x => x.Variation)
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public IEnumerable<ProductVariation> GetByProductId(long productId)
-        {
-            return _dbContext.ProductVariations
-                .Include(x => x.Variation)
-                .Where(x => x.ProductId == productId);
-        }
+        //public IEnumerable<ProductVariation> GetByProductId(long productId)
+        //{
+        //    return _dbContext.ProductVariations
+        //        .Include(x => x.Variation)
+        //        .Where(x => x.ProductId == productId);
+        //}
 
-        public void Insert(ProductVariation entity)
+        public async Task InsertAsync(ProductVariation entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.ProductVariations
-                 .Add(entity);
+            await _dbContext.ProductVariations
+                 .AddAsync(entity, token);
         }
 
-        public void Delete(ProductVariation entity)
+        public void Delete(ProductVariation entity, CancellationToken token)
         {
             _dbContext.ProductVariations
                   .Remove(entity);
         }
 
-        public void Update(ProductVariation entity)
+        public void Update(ProductVariation entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

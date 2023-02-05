@@ -21,39 +21,39 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<ProductImage> GetAll()
+        public async Task<List<ProductImage>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.ProductImages
-                .AsEnumerable();
+            IQueryable<ProductImage> results = _dbContext.ProductImages;
+            return await results.ToListAsync(token);
         }
 
-        public ProductImage GetByGuid(Guid guid)
+        public async Task<ProductImage> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.ProductImages
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.ProductImages
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public IEnumerable<ProductImage> GetByProductId(long productId)
-        {
-            return _dbContext.ProductImages
-                .Where(x => x.ProductId == productId);
-        }
+        //public IEnumerable<ProductImage> GetByProductId(long productId)
+        //{
+        //    return _dbContext.ProductImages
+        //        .Where(x => x.ProductId == productId);
+        //}
 
-        public void Insert(ProductImage entity)
+        public async Task InsertAsync(ProductImage entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.ProductImages
-                  .Add(entity);
+            await _dbContext.ProductImages
+                  .AddAsync(entity, token);
         }
 
-        public void Delete(ProductImage entity)
+        public void Delete(ProductImage entity, CancellationToken token)
         {
             _dbContext.ProductImages
                  .Remove(entity);
         }
 
-        public void Update(ProductImage entity)
+        public void Update(ProductImage entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

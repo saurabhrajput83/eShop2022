@@ -9,7 +9,7 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IProductVariationRepository : IBaseRepository<ProductVariation>
     {
-        IEnumerable<ProductVariation> GetByProductId(long productId);
+        //IEnumerable<ProductVariation> GetByProductId(long productId);
 
     }
 }

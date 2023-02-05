@@ -19,41 +19,41 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Review> GetAll()
+        public async Task<List<Review>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Reviews
-                .AsEnumerable();
+            IQueryable<Review> results = _dbContext.Reviews;
+            return await results.ToListAsync(token);
         }
 
-        public IEnumerable<Review> GetByProductId(int productId)
+        //public IEnumerable<Review> GetByProductId(int productId)
+        //{
+        //    return _dbContext.Reviews
+        //        .Include(r => r.ProductId)
+        //        .Where(r => r.ProductId == productId)
+        //        .AsEnumerable();
+        //}
+
+        public async Task<Review> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.Reviews
-                .Include(r => r.ProductId)
-                .Where(r => r.ProductId == productId)
-                .AsEnumerable();
+            return await _dbContext.Reviews
+                .FirstOrDefaultAsync(r => r.Guid == guid, token);
         }
 
-        public Review GetByGuid(Guid guid)
-        {
-            return _dbContext.Reviews
-                .FirstOrDefault(r => r.Guid == guid);
-        }
-
-        public void Insert(Review entity)
+        public async Task InsertAsync(Review entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.Reviews
-                  .Add(entity);
+            await _dbContext.Reviews
+                  .AddAsync(entity, token);
         }
 
-        public void Delete(Review entity)
+        public void Delete(Review entity, CancellationToken token)
         {
             _dbContext.Reviews
                 .Remove(entity);
         }
 
-        public void Update(Review entity)
+        public void Update(Review entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

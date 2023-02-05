@@ -19,43 +19,46 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<SelectedItem> GetAll()
+        public async Task<List<SelectedItem>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.SelectedItems.AsEnumerable();
+            IQueryable<SelectedItem> results = _dbContext.SelectedItems
+                .Include(x => x.ShoppingCart)
+                .Include(x => x.Product);
+            return await results.ToListAsync(token);
         }
 
-        public IEnumerable<SelectedItem> GetByShoppingCartGuid(Guid shoppingCartGuid)
+        //public IEnumerable<SelectedItem> GetByShoppingCartGuid(Guid shoppingCartGuid)
+        //{
+        //    return _dbContext.SelectedItems
+        //        .Include(x => x.ShoppingCart)
+        //        .Include(x => x.Product)
+        //        .Where(x => x.ShoppingCart != null && x.ShoppingCart.Guid == shoppingCartGuid)
+        //        .AsEnumerable();
+        //}
+
+        public async Task<SelectedItem> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.SelectedItems
+            return await _dbContext.SelectedItems
                 .Include(x => x.ShoppingCart)
                 .Include(x => x.Product)
-                .Where(x => x.ShoppingCart != null && x.ShoppingCart.Guid == shoppingCartGuid)
-                .AsEnumerable();
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public SelectedItem GetByGuid(Guid guid)
-        {
-            return _dbContext.SelectedItems
-                .Include(x => x.ShoppingCart)
-                .Include(x => x.Product)
-                .FirstOrDefault(p => p.Guid == guid);
-        }
-
-        public void Insert(SelectedItem entity)
+        public async Task InsertAsync(SelectedItem entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.SelectedItems
-                  .Add(entity);
+            await _dbContext.SelectedItems
+                  .AddAsync(entity, token);
         }
 
-        public void Delete(SelectedItem entity)
+        public void Delete(SelectedItem entity, CancellationToken token)
         {
             _dbContext.SelectedItems
                    .Remove(entity);
         }
 
-        public void Update(SelectedItem entity)
+        public void Update(SelectedItem entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

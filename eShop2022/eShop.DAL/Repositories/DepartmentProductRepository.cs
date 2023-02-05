@@ -20,37 +20,37 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<DepartmentProduct> GetAll()
+        public async Task<List<DepartmentProduct>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.DepartmentProducts
+            IQueryable<DepartmentProduct> results = _dbContext.DepartmentProducts
                 .Include(x => x.Department)
-                .Include(x => x.Product)
-                .AsEnumerable();
+                .Include(x => x.Product);
+            return await results.ToListAsync(token);
         }
 
-        public DepartmentProduct GetByGuid(Guid guid)
+        public async Task<DepartmentProduct> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.DepartmentProducts
+            return await _dbContext.DepartmentProducts
                  .Include(x => x.Department).ThenInclude(x => x.Parent)
                  .Include(x => x.Product)
-                 .FirstOrDefault(p => p.Guid == guid);
+                 .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public void Insert(DepartmentProduct entity)
+        public async Task InsertAsync(DepartmentProduct entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.DepartmentProducts
-                  .Add(entity);
+            await _dbContext.DepartmentProducts
+                .AddAsync(entity, token);
         }
 
-        public void Delete(DepartmentProduct entity)
+        public void Delete(DepartmentProduct entity, CancellationToken token)
         {
             _dbContext.DepartmentProducts
                   .Remove(entity);
         }
 
-        public void Update(DepartmentProduct entity)
+        public void Update(DepartmentProduct entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

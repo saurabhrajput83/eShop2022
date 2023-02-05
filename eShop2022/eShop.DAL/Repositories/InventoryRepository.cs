@@ -21,39 +21,39 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Inventory> GetAll()
+        public async Task<List<Inventory>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Inventories
-                .AsEnumerable();
+            IQueryable<Inventory> results = _dbContext.Inventories;
+            return await results.ToListAsync(token);
         }
 
-        public Inventory GetByGuid(Guid guid)
+        public async Task<Inventory> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.Inventories
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.Inventories
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public Inventory GetByProductId(long productId)
-        {
-            return _dbContext.Inventories
-                .First(p => p.ProductId == productId);
-        }
+        //public Inventory GetByProductId(long productId)
+        //{
+        //    return _dbContext.Inventories
+        //        .First(p => p.ProductId == productId);
+        //}
 
-        public void Insert(Inventory entity)
+        public async Task InsertAsync(Inventory entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.Inventories
-                 .Add(entity);
+            await _dbContext.Inventories
+                   .AddAsync(entity, token);
         }
 
-        public void Delete(Inventory entity)
+        public void Delete(Inventory entity, CancellationToken token)
         {
             _dbContext.Inventories
                  .Remove(entity);
         }
 
-        public void Update(Inventory entity)
+        public void Update(Inventory entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

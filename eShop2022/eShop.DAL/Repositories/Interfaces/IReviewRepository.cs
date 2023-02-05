@@ -9,6 +9,6 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IReviewRepository : IBaseRepository<Review>
     {
-        IEnumerable<Review> GetByProductId(int productId);
+        //IEnumerable<Review> GetByProductId(int productId);
     }
 }

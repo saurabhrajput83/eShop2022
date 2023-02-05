@@ -145,9 +145,9 @@ namespace eShop.DAL.UnitOfWork
             }
         }
 
-        public void SaveChanges()
+        public async Task<int> SaveChangesAsync(CancellationToken token)
         {
-            _dbContext.SaveChanges();
+            return await _dbContext.SaveChangesAsync(token);
         }
     }
 

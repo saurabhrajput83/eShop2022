@@ -8,11 +8,11 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IBaseRepository<T> where T : class
     {
-        IEnumerable<T> GetAll();
-        T GetByGuid(Guid guid);
-        void Insert(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task<List<T>> GetAllAsync(CancellationToken token);
+        Task<T> GetByGuidAsync(Guid guid, CancellationToken token);
+        Task InsertAsync(T entity, CancellationToken token);
+        void Update(T entity, CancellationToken token);
+        void Delete(T entity, CancellationToken token);
 
     }
 }

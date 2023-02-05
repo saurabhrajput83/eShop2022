@@ -19,33 +19,33 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<SelectedItemVariation> GetAll()
+        public async Task<List<SelectedItemVariation>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.SelectedItemVariations
-                .AsEnumerable();
+            IQueryable<SelectedItemVariation> results = _dbContext.SelectedItemVariations;
+            return await results.ToListAsync(token);
         }
 
-        public SelectedItemVariation GetByGuid(Guid guid)
+        public async Task<SelectedItemVariation> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.SelectedItemVariations
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.SelectedItemVariations
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public void Insert(SelectedItemVariation entity)
+        public async Task InsertAsync(SelectedItemVariation entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.SelectedItemVariations
-                  .Add(entity);
+            await _dbContext.SelectedItemVariations
+                  .AddAsync(entity, token);
         }
 
-        public void Delete(SelectedItemVariation entity)
+        public void Delete(SelectedItemVariation entity, CancellationToken token)
         {
             _dbContext.SelectedItemVariations
                     .Remove(entity);
         }
 
-        public void Update(SelectedItemVariation entity)
+        public void Update(SelectedItemVariation entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

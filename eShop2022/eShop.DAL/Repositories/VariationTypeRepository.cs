@@ -21,33 +21,33 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<VariationType> GetAll()
+        public async Task<List<VariationType>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.VariationTypes
-                .AsEnumerable();
+            IQueryable<VariationType> results = _dbContext.VariationTypes;
+            return await results.ToListAsync(token);
         }
 
-        public VariationType GetByGuid(Guid guid)
+        public async Task<VariationType> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.VariationTypes
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.VariationTypes
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public void Insert(VariationType entity)
+        public async Task InsertAsync(VariationType entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
-            _dbContext.VariationTypes
-                 .Add(entity);
+            await _dbContext.VariationTypes
+                 .AddAsync(entity, token);
         }
 
-        public void Delete(VariationType entity)
+        public void Delete(VariationType entity, CancellationToken token)
         {
             _dbContext.VariationTypes
                .Remove(entity);
         }
 
-        public void Update(VariationType entity)
+        public void Update(VariationType entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

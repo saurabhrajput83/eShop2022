@@ -21,25 +21,25 @@ namespace eShop.DAL.Implementations.Repositories
             _dbContext = dbContext;
         }
 
-        public IEnumerable<Warehouse> GetAll()
+        public async Task<List<Warehouse>> GetAllAsync(CancellationToken token)
         {
-            return _dbContext.Warehouses
-                .AsEnumerable();
+            IQueryable<Warehouse> results = _dbContext.Warehouses;
+            return await results.ToListAsync(token);
         }
 
-        public Warehouse GetByGuid(Guid guid)
+        public async Task<Warehouse> GetByGuidAsync(Guid guid, CancellationToken token)
         {
-            return _dbContext.Warehouses
-                .FirstOrDefault(p => p.Guid == guid);
+            return await _dbContext.Warehouses
+                .FirstOrDefaultAsync(p => p.Guid == guid, token);
         }
 
-        public void Insert(Warehouse entity)
+        public async Task InsertAsync(Warehouse entity, CancellationToken token)
         {
-            _dbContext.Warehouses
-               .Add(entity);
+            await _dbContext.Warehouses
+               .AddAsync(entity, token);
         }
 
-        public void Delete(Warehouse entity)
+        public void Delete(Warehouse entity, CancellationToken token)
         {
             CommandHelper.AddEntity(entity);
 
@@ -47,7 +47,7 @@ namespace eShop.DAL.Implementations.Repositories
                .Remove(entity);
         }
 
-        public void Update(Warehouse entity)
+        public void Update(Warehouse entity, CancellationToken token)
         {
             CommandHelper.UpdateEntity(entity);
 

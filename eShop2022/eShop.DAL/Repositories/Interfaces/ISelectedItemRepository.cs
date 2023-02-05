@@ -9,6 +9,6 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface ISelectedItemRepository : IBaseRepository<SelectedItem>
     {
-        IEnumerable<SelectedItem> GetByShoppingCartGuid(Guid shoppingCartGuid);
+        //IEnumerable<SelectedItem> GetByShoppingCartGuid(Guid shoppingCartGuid);
     }
 }

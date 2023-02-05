@@ -9,7 +9,7 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
-        IEnumerable<Product> GetAllFeaturedProducts();
-        IEnumerable<Product> GetAllNewProducts();
+        //IEnumerable<Product> GetAllFeaturedProducts();
+        //IEnumerable<Product> GetAllNewProducts();
     }
 }

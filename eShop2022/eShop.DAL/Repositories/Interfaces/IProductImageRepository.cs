@@ -9,6 +9,6 @@ namespace eShop.DAL.Repositories.Interfaces
 {
     public interface IProductImageRepository : IBaseRepository<ProductImage>
     {
-        IEnumerable<ProductImage> GetByProductId(long productId);
+        //IEnumerable<ProductImage> GetByProductId(long productId);
     }
 }
