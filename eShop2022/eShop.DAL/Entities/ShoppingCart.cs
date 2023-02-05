@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class ShoppingCart : BaseEntity
+    public partial class ShoppingCart : BaseEntity
     {
+        public ShoppingCart()
+        { }
+
         public int? CustomerId { get; set; }
     }
 }

@@ -8,6 +8,9 @@ namespace eShop.DAL.Entities
 {
     public class VariationType : BaseEntity
     {
+        public VariationType()
+        { }
+
         public string? Name { get; set; }
         public string? Description { get; set; }
     }

@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class SelectedItemVariation : BaseEntity
+    public partial class SelectedItemVariation : BaseEntity
     {
-        public decimal Modifier { get; set; }
+        public SelectedItemVariation()
+        { }
+
+        public double Modifier { get; set; }
         public int? SelectedItemId { get; set; }
         public int? VariationId { get; set; }
-        public SelectedItem? SelectedItem { get; set; }
-        public Variation? Variation { get; set; }
+        public virtual SelectedItem? SelectedItem { get; set; }
+        public virtual Variation? Variation { get; set; }
     }
 }

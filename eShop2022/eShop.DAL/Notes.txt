@@ -1,5 +1,5 @@
 ﻿1. Install-Package EntityFramework
 2. Enable-Migrations (enable-migrations –EnableAutomaticMigration:$true)
-3. Add-Migration (add-migration eShopDb-v_)
-4. Update-Database (update-database -verbose)
-5. Remove-Database (remove-database -verbose)
+3. Add-Migration (add-migration eShopDb-v_) (EntityFrameworkCore\Add-Migration eShopDb-v_)
+4. Update-Database (Update-Database -verbose)
+5. Remove-Database (Drop-Database -verbose)

@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class Product : BaseEntity
+    public partial class Product : BaseEntity
     {
+        public Product()
+        {
+            DepartmentProducts = new HashSet<DepartmentProduct>();
+            SelectedItems = new HashSet<SelectedItem>();
+        }
         public string? Name { get; set; }
         public bool IsHidden { get; set; }
         public string? ModelNumber { get; set; }
@@ -26,6 +31,9 @@ namespace eShop.DAL.Entities
         public double Breadth { get; set; }
         public double Height { get; set; }
         public int? BrandId { get; set; }
-        public Brand? Brand { get; set; }
+        public virtual Brand? Brand { get; set; }
+        public virtual ICollection<DepartmentProduct> DepartmentProducts { get; set; }
+        public virtual ICollection<SelectedItem> SelectedItems { get; set; }
+
     }
 }

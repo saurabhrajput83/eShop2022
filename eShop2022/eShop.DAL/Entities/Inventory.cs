@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class Inventory : BaseEntity
+    public partial class Inventory : BaseEntity
     {
+        public Inventory()
+        { }
+
         public int Quantity { get; set; }
         public int AlertQuantity { get; set; }
         public int? WarehouseId { get; set; }

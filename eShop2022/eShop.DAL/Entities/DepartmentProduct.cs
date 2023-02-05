@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class DepartmentProduct : BaseEntity
+    public partial class DepartmentProduct : BaseEntity
     {
+        public DepartmentProduct()
+        { }
+
         public int? DepartmentId { get; set; }
         public int? ProductId { get; set; }
         public virtual Department? Department { get; set; }

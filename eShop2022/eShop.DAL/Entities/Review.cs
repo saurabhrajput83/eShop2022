@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class Review : BaseEntity
+    public partial class Review : BaseEntity
     {
+        public Review()
+        { }
+
         public bool IsHidden { get; set; }
         public string? Headline { get; set; }
         public bool IsApproved { get; set; }
@@ -15,7 +18,7 @@ namespace eShop.DAL.Entities
         public int Rating { get; set; }
         public string? Comments { get; set; }
         public int? ProductId { get; set; }
-        public Product? Product { get; set; }
+        public virtual Product? Product { get; set; }
 
     }
 }

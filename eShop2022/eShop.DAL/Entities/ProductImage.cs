@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Entities
 {
-    public class ProductImage : BaseEntity
+    public partial class ProductImage : BaseEntity
     {
+        public ProductImage()
+        { }
+
         public string? ImageUrl { get; set; }
         public string? AltTag { get; set; }
         public bool IsDefault { get; set; }
         public int? ProductId { get; set; }
-        public Product? Product { get; set; }
+        public virtual Product? Product { get; set; }
 
     }
 }
