@@ -18,14 +18,14 @@ namespace eShop.BLL.Test
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
-        private readonly VariationLogicHelper _VariationLogicHelper;
-        
+        private readonly VariationLogicHelper _variationLogicHelper;
+
         public VariationLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
-            _VariationLogicHelper = new VariationLogicHelper(_appServices);
+            _variationLogicHelper = new VariationLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -34,46 +34,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             VariationFullView variationView;
 
             // Act
-            variationView = _VariationLogicHelper.Insert(Constants.VariationGuid);
+            variationView = await _variationLogicHelper.InsertAsync(Constants.VariationGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariation(variationView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<VariationMinimalView> variations;
 
             // Act
-            variations = _appServices.VariationLogic.GetAll();
+            variations = await _appServices.VariationLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(variations.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             // Arrange
             VariationFullView variationView;
 
             // Act
-            variationView = _appServices.VariationLogic.GetByGuid(Constants.VariationGuid);
+            variationView = await _appServices.VariationLogic.GetByGuidAsync(Constants.VariationGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariation(variationView));
         }
 
         [Test]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             // Arrange
             string newVariationName = "Test New Variation Name";
@@ -81,28 +81,28 @@ namespace eShop.BLL.Test
 
 
             // Act
-            variationView = _appServices.VariationLogic.GetByGuid(Constants.VariationGuid);
+            variationView = await _appServices.VariationLogic.GetByGuidAsync(Constants.VariationGuid);
 
             variationView.Name = newVariationName;
-            _appServices.VariationLogic.Update(variationView);
+            await _appServices.VariationLogic.UpdateAsync(variationView);
 
-            variationView = _appServices.VariationLogic.GetByGuid(Constants.VariationGuid);
+            variationView = await _appServices.VariationLogic.GetByGuidAsync(Constants.VariationGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariation(variationView) && variationView.Name == newVariationName);
         }
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             VariationFullView variationView;
 
             // Act
-            _VariationLogicHelper.Delete(Constants.VariationGuid);
-            _VariationLogicHelper.CleanUp();
+            await _variationLogicHelper.DeleteAsync(Constants.VariationGuid);
+            await _variationLogicHelper.CleanUpAsync();
 
-            variationView = _appServices.VariationLogic.GetByGuid(Constants.VariationGuid);
+            variationView = await _appServices.VariationLogic.GetByGuidAsync(Constants.VariationGuid);
 
             // Assert
             Assert.IsTrue(variationView.IsNull());

@@ -20,17 +20,17 @@ namespace eShop.BLL.Test.Helpers
     public class ReviewLogicHelper : BaseHelper<ReviewView>
     {
         private readonly IAppServices _appServices;
-        private readonly ProductLogicHelper _ProductLogicHelper;
+        private readonly ProductLogicHelper _productLogicHelper;
 
         public ReviewLogicHelper(IAppServices AppServices)
         {
             _appServices = AppServices;
-            _ProductLogicHelper= new ProductLogicHelper(_appServices);
+            _productLogicHelper = new ProductLogicHelper(_appServices);
         }
 
-        public ReviewView GetTestReviewView(Guid reviewGuid)
+        public async Task<ReviewView> GetTestReviewView(Guid reviewGuid)
         {
-            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
+            ProductFullView product = await _productLogicHelper.InsertAsync(Constants.ProductGuid);
 
             ReviewView reviewView = new ReviewView()
             {
@@ -49,21 +49,21 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override ReviewView Insert(Guid reviewGuid)
+        public override async Task<ReviewView> InsertAsync(Guid reviewGuid)
         {
-            ReviewView reviewView = GetTestReviewView(reviewGuid);
-            return _appServices.ReviewLogic.Insert(reviewView);
+            ReviewView reviewView = await GetTestReviewView(reviewGuid);
+            return await _appServices.ReviewLogic.InsertAsync(reviewView);
         }
 
-        public override void Delete(Guid reviewGuid)
+        public override async Task DeleteAsync(Guid reviewGuid)
         {
-            _appServices.ReviewLogic.Delete(reviewGuid);
+            await _appServices.ReviewLogic.DeleteAsync(reviewGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _ProductLogicHelper.Delete(Constants.ProductGuid);
-            _ProductLogicHelper.CleanUp();
+            await _productLogicHelper.DeleteAsync(Constants.ProductGuid);
+            await _productLogicHelper.CleanUpAsync();
         }
 
     }

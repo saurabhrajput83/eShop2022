@@ -17,22 +17,22 @@ namespace eShop.BLL.Test.Helpers
     public class SelectedItemLogicHelper : BaseHelper<SelectedItemFullView>
     {
         private readonly IAppServices _appServices;
-        private readonly ProductLogicHelper _ProductLogicHelper;
-        private readonly ShoppingCartLogicHelper _ShoppingCartLogicHelper;
+        private readonly ProductLogicHelper _productLogicHelper;
+        private readonly ShoppingCartLogicHelper _shoppingCartLogicHelper;
 
         public SelectedItemLogicHelper(IAppServices AppServices)
         {
             _appServices = AppServices;
-            _ProductLogicHelper= new ProductLogicHelper(_appServices);
-            _ShoppingCartLogicHelper = new ShoppingCartLogicHelper(_appServices);
+            _productLogicHelper = new ProductLogicHelper(_appServices);
+            _shoppingCartLogicHelper = new ShoppingCartLogicHelper(_appServices);
         }
 
-        public SelectedItemFullView GetTestSelectedItemView(Guid selectedItemGuid)
+        public async Task<SelectedItemFullView> GetTestSelectedItemView(Guid selectedItemGuid)
         {
-            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
-            ShoppingCartView shoppingCart = _ShoppingCartLogicHelper.Insert(Constants.ShoppingCartGuid);
+            ProductFullView product = await _productLogicHelper.InsertAsync(Constants.ProductGuid);
+            ShoppingCartView shoppingCart = await _shoppingCartLogicHelper.InsertAsync(Constants.ShoppingCartGuid);
 
-            SelectedItemFullView  selectedItem = new SelectedItemFullView()
+            SelectedItemFullView selectedItem = new SelectedItemFullView()
             {
                 Guid = selectedItemGuid,
                 ProductId = product.Id,
@@ -47,23 +47,23 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override SelectedItemFullView Insert(Guid selectedItemGuid)
+        public override async Task<SelectedItemFullView> InsertAsync(Guid selectedItemGuid)
         {
-            SelectedItemFullView selectedItemView = GetTestSelectedItemView(selectedItemGuid);
-            return _appServices.SelectedItemLogic.Insert(selectedItemView);
+            SelectedItemFullView selectedItemView = await GetTestSelectedItemView(selectedItemGuid);
+            return await _appServices.SelectedItemLogic.InsertAsync(selectedItemView);
         }
 
-        public override void Delete(Guid selectedItemGuid)
+        public override async Task DeleteAsync(Guid selectedItemGuid)
         {
-            _appServices.SelectedItemLogic.Delete(selectedItemGuid);
+            await _appServices.SelectedItemLogic.DeleteAsync(selectedItemGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _ShoppingCartLogicHelper.Delete(Constants.ShoppingCartGuid);
-            _ShoppingCartLogicHelper.CleanUp();
-            _ProductLogicHelper.Delete(Constants.ProductGuid);
-            _ProductLogicHelper.CleanUp();
+            await _shoppingCartLogicHelper.DeleteAsync(Constants.ShoppingCartGuid);
+            await _shoppingCartLogicHelper.CleanUpAsync();
+            await _productLogicHelper.DeleteAsync(Constants.ProductGuid);
+            await _productLogicHelper.CleanUpAsync();
         }
 
     }

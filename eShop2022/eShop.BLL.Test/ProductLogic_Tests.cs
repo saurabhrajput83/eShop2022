@@ -19,14 +19,14 @@ namespace eShop.BLL.Test
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
-        private readonly ProductLogicHelper _ProductLogicHelper;
+        private readonly ProductLogicHelper _productLogicHelper;
 
         public ProductLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
-            _ProductLogicHelper = new ProductLogicHelper(_appServices);
+            _productLogicHelper = new ProductLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -35,46 +35,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             ProductFullView productView;
 
             // Act
-            productView = _ProductLogicHelper.Insert(Constants.ProductGuid);
+            productView = await _productLogicHelper.InsertAsync(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<ProductMinimalView> products;
 
             // Act
-            products = _appServices.ProductLogic.GetAll();
+            products = await _appServices.ProductLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(products.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             // Arrange
             ProductFullView productView;
 
             // Act
-            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = await _appServices.ProductLogic.GetByGuidAsync(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView));
         }
 
         [Test]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             // Arrange
             string newProductName = "Test New Product Name";
@@ -82,28 +82,28 @@ namespace eShop.BLL.Test
 
 
             // Act
-            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = await _appServices.ProductLogic.GetByGuidAsync(Constants.ProductGuid);
 
             productView.Name = newProductName;
-            _appServices.ProductLogic.Update(productView);
+            await _appServices.ProductLogic.UpdateAsync(productView);
 
-            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = await _appServices.ProductLogic.GetByGuidAsync(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView) && productView.Name == newProductName);
         }
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             ProductFullView productView;
 
             // Act
-            _ProductLogicHelper.Delete(Constants.ProductGuid);
-            _ProductLogicHelper.CleanUp();
+            await _productLogicHelper.DeleteAsync(Constants.ProductGuid);
+            await _productLogicHelper.CleanUpAsync();
 
-            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = await _appServices.ProductLogic.GetByGuidAsync(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(productView.IsNull());

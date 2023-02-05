@@ -42,18 +42,18 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override WarehouseFullView Insert(Guid warehouseGuid)
+        public override async Task<WarehouseFullView> InsertAsync(Guid warehouseGuid)
         {
             WarehouseFullView warehouseView = GetTestWarehouseView(warehouseGuid);
-            return _appServices.WarehouseLogic.Insert(warehouseView);
+            return await _appServices.WarehouseLogic.InsertAsync(warehouseView);
         }
 
-        public override void Delete(Guid warehouseGuid)
+        public override async Task DeleteAsync(Guid warehouseGuid)
         {
-            _appServices.WarehouseLogic.Delete(warehouseGuid);
+            await _appServices.WarehouseLogic.DeleteAsync(warehouseGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

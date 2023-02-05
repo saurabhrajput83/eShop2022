@@ -20,14 +20,14 @@ namespace eShop.BLL.Test
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
-        private readonly DepartmentLogicHelper _DepartmentLogicHelper;
-        
+        private readonly DepartmentLogicHelper _departmentLogicHelper;
+
         public DepartmentLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
-            _DepartmentLogicHelper = new DepartmentLogicHelper(_appServices);
+            _departmentLogicHelper = new DepartmentLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -36,13 +36,13 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             DepartmentFullView DepartmentView;
 
             // Act
-            DepartmentView = _DepartmentLogicHelper.Insert(Constants.DepartmentGuid);
+            DepartmentView = await _departmentLogicHelper.InsertAsync(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView));
@@ -50,13 +50,13 @@ namespace eShop.BLL.Test
 
 
         [Test]
-        public void Test2_InsertChild()
+        public async Task Test2_InsertChild()
         {
             //Arrange
             DepartmentFullView childDepartment;
 
             // Act
-            childDepartment = _DepartmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
+            childDepartment = await _departmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateChildDepartment(childDepartment));
@@ -64,33 +64,33 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test3_GetAll()
+        public async Task Test3_GetAll()
         {
             // Arrange
             List<DepartmentMinimalView> Departments;
 
             // Act
-            Departments = _appServices.DepartmentLogic.GetAll();
+            Departments = await _appServices.DepartmentLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(Departments.IsNotEmpty());
         }
 
         [Test]
-        public void Test4_GetByGuid()
+        public async Task Test4_GetByGuid()
         {
             // Arrange
             DepartmentFullView DepartmentView;
 
             // Act
-            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = await _appServices.DepartmentLogic.GetByGuidAsync(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView));
         }
 
         [Test]
-        public void Test5_Update()
+        public async Task Test5_Update()
         {
             // Arrange
             string newDepartmentName = "Test New Department Name";
@@ -98,29 +98,29 @@ namespace eShop.BLL.Test
 
 
             // Act
-            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = await _appServices.DepartmentLogic.GetByGuidAsync(Constants.DepartmentGuid);
 
             DepartmentView.Name = newDepartmentName;
-            _appServices.DepartmentLogic.Update(DepartmentView);
+            await _appServices.DepartmentLogic.UpdateAsync(DepartmentView);
 
-            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = await _appServices.DepartmentLogic.GetByGuidAsync(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView) && DepartmentView.Name == newDepartmentName);
         }
 
         [Test]
-        public void Test6_Delete()
+        public async Task Test6_Delete()
         {
             // Arrange
             DepartmentFullView DepartmentView;
 
             // Act
-            _DepartmentLogicHelper.Delete(Constants.DepartmentGuid);
-            _DepartmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
-            _DepartmentLogicHelper.CleanUp();
+            await _departmentLogicHelper.DeleteAsync(Constants.DepartmentGuid);
+            await _departmentLogicHelper.DeleteAsync(Constants.ChildDepartmentGuid);
+            await _departmentLogicHelper.CleanUpAsync();
 
-            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = await _appServices.DepartmentLogic.GetByGuidAsync(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(DepartmentView.IsNull());

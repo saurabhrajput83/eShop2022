@@ -20,21 +20,21 @@ namespace eShop.BLL.Test.Helpers
     public class DepartmentProductLogicHelper : BaseHelper<DepartmentProductFullView>
     {
         private readonly IAppServices _appServices;
-        private readonly DepartmentLogicHelper _DepartmentLogicHelper;
-        private readonly ProductLogicHelper _ProductLogicHelper;
+        private readonly DepartmentLogicHelper _departmentLogicHelper;
+        private readonly ProductLogicHelper _productLogicHelper;
 
         public DepartmentProductLogicHelper(IAppServices AppServices)
         {
             _appServices = AppServices;
-            _DepartmentLogicHelper= new DepartmentLogicHelper(_appServices);
-            _ProductLogicHelper = new ProductLogicHelper(_appServices); 
+            _departmentLogicHelper = new DepartmentLogicHelper(_appServices);
+            _productLogicHelper = new ProductLogicHelper(_appServices);
         }
 
-        public DepartmentProductFullView GetTestDepartmentProductView(Guid departmentProductGuid)
+        public async Task<DepartmentProductFullView> GetTestDepartmentProductView(Guid departmentProductGuid)
         {
-            DepartmentFullView parentDepartment = _DepartmentLogicHelper.Insert(Constants.DepartmentGuid);
-            DepartmentFullView childDepartment = _DepartmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
-            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
+            DepartmentFullView parentDepartment = await _departmentLogicHelper.InsertAsync(Constants.DepartmentGuid);
+            DepartmentFullView childDepartment = await _departmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
+            ProductFullView product = await _productLogicHelper.InsertAsync(Constants.ProductGuid);
 
             DepartmentProductFullView departmentProduct = new DepartmentProductFullView()
             {
@@ -49,25 +49,25 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override DepartmentProductFullView Insert(Guid departmentProductGuid)
+        public override async Task<DepartmentProductFullView> InsertAsync(Guid departmentProductGuid)
         {
-            DepartmentProductFullView departmentProductView = GetTestDepartmentProductView(departmentProductGuid);
-            return _appServices.DepartmentProductLogic.Insert(departmentProductView);
+            DepartmentProductFullView departmentProductView = await GetTestDepartmentProductView(departmentProductGuid);
+            return await _appServices.DepartmentProductLogic.InsertAsync(departmentProductView);
         }
 
-        public override void Delete(Guid departmentProductGuid)
+        public override async Task DeleteAsync(Guid departmentProductGuid)
         {
-            _appServices.DepartmentProductLogic.Delete(departmentProductGuid);
+            await _appServices.DepartmentProductLogic.DeleteAsync(departmentProductGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _DepartmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
-            _DepartmentLogicHelper.Delete(Constants.DepartmentGuid);
-            _DepartmentLogicHelper.CleanUp();
+            await _departmentLogicHelper.DeleteAsync(Constants.ChildDepartmentGuid);
+            await _departmentLogicHelper.DeleteAsync(Constants.DepartmentGuid);
+            await _departmentLogicHelper.CleanUpAsync();
 
-            _ProductLogicHelper.Delete(Constants.ProductGuid);
-            _ProductLogicHelper.CleanUp();
+            await _productLogicHelper.DeleteAsync(Constants.ProductGuid);
+            await _productLogicHelper.CleanUpAsync();
         }
 
     }

@@ -19,14 +19,14 @@ namespace eShop.BLL.Test
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
-        private readonly SelectedItemLogicHelper _SelectedItemLogicHelper;
-        
+        private readonly SelectedItemLogicHelper _selectedItemLogicHelper;
+
         public SelectedItemLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
-            _SelectedItemLogicHelper = new SelectedItemLogicHelper(_appServices);
+            _selectedItemLogicHelper = new SelectedItemLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -35,46 +35,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             SelectedItemFullView selectedItemView;
 
             // Act
-            selectedItemView = _SelectedItemLogicHelper.Insert(Constants.SelectedItemGuid);
+            selectedItemView = await _selectedItemLogicHelper.InsertAsync(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<SelectedItemMinimalView> selectedItems;
 
             // Act
-            selectedItems = _appServices.SelectedItemLogic.GetAll();
+            selectedItems = await _appServices.SelectedItemLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(selectedItems.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuidAsync()
         {
             // Arrange
             SelectedItemFullView selectedItemView;
 
             // Act
-            selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+            selectedItemView = await _appServices.SelectedItemLogic.GetByGuidAsync(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView));
         }
 
         //[Test]
-        //public void Test4_Update()
+        //public async Task Test4_Update()
         //{
         //    // Arrange
         //    string newSelectedItemName = "Test New SelectedItem Name";
@@ -82,28 +82,28 @@ namespace eShop.BLL.Test
 
 
         //    // Act
-        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuidAsync(Constants.SelectedItemGuid);
 
         //    selectedItemView.Name = newSelectedItemName;
         //    _appServices.SelectedItemLogic.Update(selectedItemView);
 
-        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuidAsync(Constants.SelectedItemGuid);
 
         //    // Assert
         //    Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView) && selectedItemView.Name == newSelectedItemName);
         //}
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             SelectedItemFullView selectedItemView;
 
             // Act
-            _SelectedItemLogicHelper.Delete(Constants.SelectedItemGuid);
-            _SelectedItemLogicHelper.CleanUp();
+            await _selectedItemLogicHelper.DeleteAsync(Constants.SelectedItemGuid);
+            await _selectedItemLogicHelper.CleanUpAsync();
 
-            selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+            selectedItemView = await _appServices.SelectedItemLogic.GetByGuidAsync(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(selectedItemView.IsNull());

@@ -38,9 +38,9 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public DepartmentFullView GetTestChildDepartment(Guid parentDepartmentGuid, Guid childDepartmentGuid)
+        public async Task<DepartmentFullView> GetTestChildDepartment(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
-            DepartmentFullView parentDepartment = _appServices.DepartmentLogic.GetByGuid(parentDepartmentGuid);
+            DepartmentFullView parentDepartment = await _appServices.DepartmentLogic.GetByGuidAsync(parentDepartmentGuid);
 
             DepartmentFullView childDepartment = new DepartmentFullView()
             {
@@ -57,26 +57,26 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override DepartmentFullView Insert(Guid departmentGuid)
+        public override async Task<DepartmentFullView> InsertAsync(Guid departmentGuid)
         {
             DepartmentFullView department = GetTestDepartmentView(departmentGuid);
-            return _appServices.DepartmentLogic.Insert(department);
+            return await _appServices.DepartmentLogic.InsertAsync(department);
         }
 
-        public DepartmentFullView InsertChild(Guid parentDepartmentGuid, Guid childDepartmentGuid)
+        public async Task<DepartmentFullView> InsertChild(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
-            DepartmentFullView childDepartment = GetTestChildDepartment(parentDepartmentGuid, childDepartmentGuid);
+            DepartmentFullView childDepartment = await GetTestChildDepartment(parentDepartmentGuid, childDepartmentGuid);
 
-            return _appServices.DepartmentLogic.Insert(childDepartment);
+            return await _appServices.DepartmentLogic.InsertAsync(childDepartment);
         }
 
 
-        public override void Delete(Guid departmentGuid)
+        public override async Task DeleteAsync(Guid departmentGuid)
         {
-            _appServices.DepartmentLogic.Delete(departmentGuid);
+            await _appServices.DepartmentLogic.DeleteAsync(departmentGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

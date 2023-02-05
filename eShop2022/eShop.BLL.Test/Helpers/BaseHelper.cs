@@ -15,11 +15,11 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public abstract T Insert(Guid guid);
+        public abstract Task<T> InsertAsync(Guid guid);
 
-        public abstract void Delete(Guid guid);
+        public abstract Task DeleteAsync(Guid guid);
 
-        public abstract void CleanUp();
+        public abstract Task CleanUpAsync();
 
     }
 }

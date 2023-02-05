@@ -20,17 +20,17 @@ namespace eShop.BLL.Test.Helpers
     public class VariationLogicHelper : BaseHelper<VariationFullView>
     {
         private readonly IAppServices _appServices;
-        private readonly VariationTypeLogicHelper _VariationTypeLogicHelper;
+        private readonly VariationTypeLogicHelper _variationTypeLogicHelper;
 
         public VariationLogicHelper(IAppServices AppServices)
         {
             _appServices = AppServices;
-            _VariationTypeLogicHelper = new VariationTypeLogicHelper(_appServices);
+            _variationTypeLogicHelper = new VariationTypeLogicHelper(_appServices);
         }
 
-        public VariationFullView GetTestVariationView(Guid variationGuid)
+        public async Task<VariationFullView> GetTestVariationView(Guid variationGuid)
         {
-            VariationTypeFullView variationType = _VariationTypeLogicHelper.Insert(Constants.VariationTypeGuid);
+            VariationTypeFullView variationType = await _variationTypeLogicHelper.InsertAsync(Constants.VariationTypeGuid);
 
             VariationFullView variationView = new VariationFullView()
             {
@@ -47,21 +47,21 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override VariationFullView Insert(Guid variationGuid)
+        public override async Task<VariationFullView> InsertAsync(Guid variationGuid)
         {
-            VariationFullView variationView = GetTestVariationView(variationGuid);
-            return _appServices.VariationLogic.Insert(variationView);
+            VariationFullView variationView = await GetTestVariationView(variationGuid);
+            return await _appServices.VariationLogic.InsertAsync(variationView);
         }
 
-        public override void Delete(Guid variationGuid)
+        public override async Task DeleteAsync(Guid variationGuid)
         {
-            _appServices.VariationLogic.Delete(variationGuid);
+            await _appServices.VariationLogic.DeleteAsync(variationGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _VariationTypeLogicHelper.Delete(Constants.VariationTypeGuid);
-            _VariationTypeLogicHelper.CleanUp();
+            await _variationTypeLogicHelper.DeleteAsync(Constants.VariationTypeGuid);
+            await _variationTypeLogicHelper.CleanUpAsync();
         }
 
     }

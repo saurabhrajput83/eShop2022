@@ -40,18 +40,18 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override VariationTypeFullView Insert(Guid variationTypeGuid)
+        public override async Task<VariationTypeFullView> InsertAsync(Guid variationTypeGuid)
         {
             VariationTypeFullView variationTypeView = GetTestVariationTypeView(variationTypeGuid);
-            return _appServices.VariationTypeLogic.Insert(variationTypeView);
+            return await _appServices.VariationTypeLogic.InsertAsync(variationTypeView);
         }
 
-        public override void Delete(Guid variationTypeGuid)
+        public override async Task DeleteAsync(Guid variationTypeGuid)
         {
-            _appServices.VariationTypeLogic.Delete(variationTypeGuid);
+            await _appServices.VariationTypeLogic.DeleteAsync(variationTypeGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

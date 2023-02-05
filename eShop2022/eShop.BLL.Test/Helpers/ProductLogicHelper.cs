@@ -14,17 +14,17 @@ namespace eShop.BLL.Test.Helpers
     public class ProductLogicHelper : BaseHelper<ProductFullView>
     {
         private readonly IAppServices _appServices;
-        private readonly BrandLogicHelper _BrandLogicHelper;
+        private readonly BrandLogicHelper _brandLogicHelper;
 
         public ProductLogicHelper(IAppServices AppServices)
         {
             _appServices = AppServices;
-            _BrandLogicHelper= new BrandLogicHelper(_appServices);
+            _brandLogicHelper = new BrandLogicHelper(_appServices);
         }
 
-        public ProductFullView GetTestProductView(Guid productGuid)
+        public async Task<ProductFullView> GetTestProductView(Guid productGuid)
         {
-            BrandFullView brand = _BrandLogicHelper.Insert(Constants.BrandGuid);
+            BrandFullView brand = await _brandLogicHelper.InsertAsync(Constants.BrandGuid);
 
             ProductFullView productView = new ProductFullView()
             {
@@ -55,21 +55,21 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override ProductFullView Insert(Guid productGuid)
+        public override async Task<ProductFullView> InsertAsync(Guid productGuid)
         {
-            ProductFullView productView = GetTestProductView(productGuid);
-            return _appServices.ProductLogic.Insert(productView);
+            ProductFullView productView = await GetTestProductView(productGuid);
+            return await _appServices.ProductLogic.InsertAsync(productView);
         }
 
-        public override void Delete(Guid productGuid)
+        public override async Task DeleteAsync(Guid productGuid)
         {
-            _appServices.ProductLogic.Delete(productGuid);
+            await _appServices.ProductLogic.DeleteAsync(productGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _BrandLogicHelper.Delete(Constants.BrandGuid);
-            _BrandLogicHelper.CleanUp();
+            await _brandLogicHelper.DeleteAsync(Constants.BrandGuid);
+            await _brandLogicHelper.CleanUpAsync();
         }
 
     }

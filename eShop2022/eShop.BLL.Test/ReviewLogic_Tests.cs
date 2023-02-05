@@ -19,14 +19,14 @@ namespace eShop.BLL.Test
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
-        private readonly ReviewLogicHelper _ReviewLogicHelper;
-        
+        private readonly ReviewLogicHelper _reviewLogicHelper;
+
         public ReviewLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
-            _ReviewLogicHelper = new ReviewLogicHelper(_appServices);
+            _reviewLogicHelper = new ReviewLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -35,46 +35,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             ReviewView reviewView;
 
             // Act
-            reviewView = _ReviewLogicHelper.Insert(Constants.ReviewGuid);
+            reviewView = await _reviewLogicHelper.InsertAsync(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<ReviewView> reviews;
 
             // Act
-            reviews = _appServices.ReviewLogic.GetAll();
+            reviews = await _appServices.ReviewLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(reviews.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             // Arrange
             ReviewView reviewView;
 
             // Act
-            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = await _appServices.ReviewLogic.GetByGuidAsync(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
         }
 
         [Test]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             // Arrange
             string newHeadline = "Test New Review Headline";
@@ -82,28 +82,28 @@ namespace eShop.BLL.Test
 
 
             // Act
-            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = await _appServices.ReviewLogic.GetByGuidAsync(Constants.ReviewGuid);
 
             reviewView.Headline = newHeadline;
-            _appServices.ReviewLogic.Update(reviewView);
+            _appServices.ReviewLogic.UpdateAsync(reviewView);
 
-            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = await _appServices.ReviewLogic.GetByGuidAsync(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView) && reviewView.Headline == newHeadline);
         }
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             ReviewView reviewView;
 
             // Act
-            _ReviewLogicHelper.Delete(Constants.ReviewGuid);
-            _ReviewLogicHelper.CleanUp();
+            await _reviewLogicHelper.DeleteAsync(Constants.ReviewGuid);
+            await _reviewLogicHelper.CleanUpAsync();
 
-            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = await _appServices.ReviewLogic.GetByGuidAsync(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(reviewView.IsNull());

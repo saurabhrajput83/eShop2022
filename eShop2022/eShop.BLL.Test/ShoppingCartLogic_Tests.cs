@@ -20,10 +20,10 @@ namespace eShop.BLL.Test
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
         private readonly ShoppingCartLogicHelper _ShoppingCartLogicHelper;
-        
+
         public ShoppingCartLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
             _ShoppingCartLogicHelper = new ShoppingCartLogicHelper(_appServices);
@@ -35,46 +35,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             ShoppingCartView shoppingCartView;
 
             // Act
-            shoppingCartView = _ShoppingCartLogicHelper.Insert(Constants.ShoppingCartGuid);
+            shoppingCartView = await _ShoppingCartLogicHelper.InsertAsync(Constants.ShoppingCartGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateShoppingCart(shoppingCartView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<ShoppingCartView> shoppingCarts;
 
             // Act
-            shoppingCarts = _appServices.ShoppingCartLogic.GetAll();
+            shoppingCarts = await _appServices.ShoppingCartLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(shoppingCarts.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             // Arrange
             ShoppingCartView shoppingCartView;
 
             // Act
-            shoppingCartView = _appServices.ShoppingCartLogic.GetByGuid(Constants.ShoppingCartGuid);
+            shoppingCartView = await _appServices.ShoppingCartLogic.GetByGuidAsync(Constants.ShoppingCartGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateShoppingCart(shoppingCartView));
         }
 
         //[Test]
-        //public void Test4_Update()
+        //public async Task Test4_Update()
         //{
         //    // Arrange
         //    string newShoppingCartName = "Test New ShoppingCart Name";
@@ -82,28 +82,28 @@ namespace eShop.BLL.Test
 
 
         //    // Act
-        //    shoppingCartView = _appServices.ShoppingCartLogic.GetByGuid(Constants.ShoppingCartGuid);
+        //    shoppingCartView = _appServices.ShoppingCartLogic.GetByGuidAsync(Constants.ShoppingCartGuid);
 
         //    shoppingCartView.Name = newShoppingCartName;
         //    _appServices.ShoppingCartLogic.Update(shoppingCartView);
 
-        //    shoppingCartView = _appServices.ShoppingCartLogic.GetByGuid(Constants.ShoppingCartGuid);
+        //    shoppingCartView = _appServices.ShoppingCartLogic.GetByGuidAsync(Constants.ShoppingCartGuid);
 
         //    // Assert
         //    Assert.IsTrue(ValidationHelper.ValidateShoppingCart(shoppingCartView) && shoppingCartView.Name == newShoppingCartName);
         //}
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             ShoppingCartView shoppingCartView;
 
             // Act
-            _ShoppingCartLogicHelper.Delete(Constants.ShoppingCartGuid);
-            _ShoppingCartLogicHelper.CleanUp();
+            await _ShoppingCartLogicHelper.DeleteAsync(Constants.ShoppingCartGuid);
+            await _ShoppingCartLogicHelper.CleanUpAsync();
 
-            shoppingCartView = _appServices.ShoppingCartLogic.GetByGuid(Constants.ShoppingCartGuid);
+            shoppingCartView = await _appServices.ShoppingCartLogic.GetByGuidAsync(Constants.ShoppingCartGuid);
 
             // Assert
             Assert.IsTrue(shoppingCartView.IsNull());

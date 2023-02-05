@@ -41,18 +41,18 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override BrandFullView Insert(Guid brandGuid)
+        public override async Task<BrandFullView> InsertAsync(Guid brandGuid)
         {
             BrandFullView brandView = GetTestBrandView(brandGuid);
-            return _appServices.BrandLogic.Insert(brandView);
+            return await _appServices.BrandLogic.InsertAsync(brandView);
         }
 
-        public override void Delete(Guid brandGuid)
+        public override async Task DeleteAsync(Guid brandGuid)
         {
-            _appServices.BrandLogic.Delete(brandGuid);
+            await _appServices.BrandLogic.DeleteAsync(brandGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

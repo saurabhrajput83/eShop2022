@@ -20,10 +20,10 @@ namespace eShop.BLL.Test
         private readonly IAppUnitOfWork _unitOfWork;
         private readonly IAppServices _appServices;
         private readonly WarehouseLogicHelper _WarehouseLogicHelper;
-        
+
         public WarehouseLogic_Tests()
         {
-             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _appServices = new AppServices(_unitOfWork);
             _WarehouseLogicHelper = new WarehouseLogicHelper(_appServices);
@@ -35,46 +35,46 @@ namespace eShop.BLL.Test
         }
 
         [Test]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             // Arrange
             WarehouseFullView warehouseView;
 
             // Act
-            warehouseView = _WarehouseLogicHelper.Insert(Constants.WarehouseGuid);
+            warehouseView = await _WarehouseLogicHelper.InsertAsync(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView));
         }
 
         [Test]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             // Arrange
             List<WarehouseMinimalView> warehouses;
 
             // Act
-            warehouses = _appServices.WarehouseLogic.GetAll();
+            warehouses = await _appServices.WarehouseLogic.GetAllAsync();
 
             // Assert
             Assert.IsTrue(warehouses.IsNotEmpty());
         }
 
         [Test]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             // Arrange
             WarehouseFullView warehouseView;
 
             // Act
-            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = await _appServices.WarehouseLogic.GetByGuidAsync(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView));
         }
 
         [Test]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             // Arrange
             string newWarehouseName = "Test New Warehouse Name";
@@ -82,28 +82,28 @@ namespace eShop.BLL.Test
 
 
             // Act
-            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = await _appServices.WarehouseLogic.GetByGuidAsync(Constants.WarehouseGuid);
 
             warehouseView.Name = newWarehouseName;
-            _appServices.WarehouseLogic.Update(warehouseView);
+            await _appServices.WarehouseLogic.UpdateAsync(warehouseView);
 
-            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = await _appServices.WarehouseLogic.GetByGuidAsync(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView) && warehouseView.Name == newWarehouseName);
         }
 
         [Test]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             // Arrange
             WarehouseFullView warehouseView;
 
             // Act
-            _WarehouseLogicHelper.Delete(Constants.WarehouseGuid);
-            _WarehouseLogicHelper.CleanUp();
+            await _WarehouseLogicHelper.DeleteAsync(Constants.WarehouseGuid);
+            await _WarehouseLogicHelper.CleanUpAsync();
 
-            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = await _appServices.WarehouseLogic.GetByGuidAsync(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(warehouseView.IsNull());

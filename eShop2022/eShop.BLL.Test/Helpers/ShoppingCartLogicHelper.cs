@@ -38,18 +38,18 @@ namespace eShop.BLL.Test.Helpers
 
         }
 
-        public override ShoppingCartView Insert(Guid shoppingCartGuid)
+        public override async Task<ShoppingCartView> InsertAsync(Guid shoppingCartGuid)
         {
             ShoppingCartView shoppingCartView = GetTestShoppingCartView(shoppingCartGuid);
-            return _appServices.ShoppingCartLogic.Insert(shoppingCartView);
+            return await _appServices.ShoppingCartLogic.InsertAsync(shoppingCartView);
         }
 
-        public override void Delete(Guid shoppingCartGuid)
+        public override async Task DeleteAsync(Guid shoppingCartGuid)
         {
-            _appServices.ShoppingCartLogic.Delete(shoppingCartGuid);
+            await _appServices.ShoppingCartLogic.DeleteAsync(shoppingCartGuid);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 
