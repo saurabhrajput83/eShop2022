@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class ProductVariationRepository : IProductVariationRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public ProductVariationRepository(eShopDbContext dbContext)
+        public ProductVariationRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -10,7 +10,7 @@ using eShop.DAL.Main;
 
 namespace eShop.DAL.Migrations
 {
-    [DbContext(typeof(eShopDbContext))]
+    [DbContext(typeof(AppDbContext))]
     partial class eShopDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

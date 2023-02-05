@@ -12,9 +12,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class ReviewRepository : IReviewRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public ReviewRepository(eShopDbContext dbContext)
+        public ReviewRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public ShoppingCartRepository(eShopDbContext dbContext)
+        public ShoppingCartRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

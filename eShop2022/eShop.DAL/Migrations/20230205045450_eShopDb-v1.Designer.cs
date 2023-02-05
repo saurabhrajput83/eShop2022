@@ -11,7 +11,7 @@ using eShop.DAL.Main;
 
 namespace eShop.DAL.Migrations
 {
-    [DbContext(typeof(eShopDbContext))]
+    [DbContext(typeof(AppDbContext))]
     [Migration("20230205045450_eShopDb-v1")]
     partial class eShopDbv1
     {

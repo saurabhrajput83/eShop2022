@@ -9,9 +9,9 @@ using eShop.DAL.Implementations.Repositories;
 
 namespace eShop.DAL.UnitOfWork
 {
-    public class eShopUnitOfWork : IeShopUnitOfWork
+    public class AppUnitOfWork : IAppUnitOfWork
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
         private IBrandRepository _brandRepository;
         private IDepartmentProductRepository _departmentProductRepository;
         private IDepartmentRepository _departmentRepository;
@@ -27,7 +27,7 @@ namespace eShop.DAL.UnitOfWork
         private IVariationRepository _variationRepository;
         private IWarehouseRepository _warehouseRepository;
 
-        public eShopUnitOfWork(eShopDbContext dbContext)
+        public AppUnitOfWork(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

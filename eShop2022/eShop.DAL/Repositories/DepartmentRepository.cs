@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class DepartmentRepository : IDepartmentRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public DepartmentRepository(eShopDbContext dbContext)
+        public DepartmentRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class ProductImageRepository : IProductImageRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public ProductImageRepository(eShopDbContext dbContext)
+        public ProductImageRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

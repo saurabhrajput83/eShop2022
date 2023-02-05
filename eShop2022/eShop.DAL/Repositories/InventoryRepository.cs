@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class InventoryRepository : IInventoryRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public InventoryRepository(eShopDbContext dbContext)
+        public InventoryRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

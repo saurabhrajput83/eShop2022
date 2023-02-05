@@ -14,16 +14,16 @@ using System.Threading.Tasks;
 
 namespace eShop.DAL.Main
 {
-    public partial class eShopDbContext : DbContext
+    public partial class AppDbContext : DbContext
     {
         private readonly IConfigurationRoot Configuration;
 
-        public eShopDbContext()
+        public AppDbContext()
         {
 
         }
 
-        public eShopDbContext(DbContextOptions<eShopDbContext> options) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 

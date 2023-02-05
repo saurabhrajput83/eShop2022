@@ -14,9 +14,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class BrandRepository : IBrandRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public BrandRepository(eShopDbContext dbContext)
+        public BrandRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

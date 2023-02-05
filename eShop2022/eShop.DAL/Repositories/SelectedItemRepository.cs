@@ -12,9 +12,9 @@ namespace eShop.DAL.Implementations.Repositories
 {
     public class SelectedItemRepository : ISelectedItemRepository
     {
-        private readonly eShopDbContext _dbContext;
+        private readonly AppDbContext _dbContext;
 
-        public SelectedItemRepository(eShopDbContext dbContext)
+        public SelectedItemRepository(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }

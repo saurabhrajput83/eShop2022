@@ -7,7 +7,7 @@ using eShop.DAL.Repositories.Interfaces;
 
 namespace eShop.DAL.UnitOfWork
 {
-    public interface IeShopUnitOfWork
+    public interface IAppUnitOfWork
     {
         IBrandRepository BrandRepository { get; }
         IDepartmentProductRepository DepartmentProductRepository { get; }
