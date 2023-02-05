@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
+using eShop.BLL.Services;
 using eShop.DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,11 +13,11 @@ namespace eShop.BLL.Test.Helpers
 {
     public class DepartmentLogicHelper : BaseHelper<DepartmentFullView>
     {
-        private readonly ILogicHelper _logicHelper;
+        private readonly IAppServices _appServices;
 
-        public DepartmentLogicHelper(ILogicHelper logicHelper)
+        public DepartmentLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
+            _appServices = AppServices;
         }
 
 
@@ -39,7 +40,7 @@ namespace eShop.BLL.Test.Helpers
 
         public DepartmentFullView GetTestChildDepartment(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
-            DepartmentFullView parentDepartment = _logicHelper.DepartmentLogic.GetByGuid(parentDepartmentGuid);
+            DepartmentFullView parentDepartment = _appServices.DepartmentLogic.GetByGuid(parentDepartmentGuid);
 
             DepartmentFullView childDepartment = new DepartmentFullView()
             {
@@ -59,20 +60,20 @@ namespace eShop.BLL.Test.Helpers
         public override DepartmentFullView Insert(Guid departmentGuid)
         {
             DepartmentFullView department = GetTestDepartmentView(departmentGuid);
-            return _logicHelper.DepartmentLogic.Insert(department);
+            return _appServices.DepartmentLogic.Insert(department);
         }
 
         public DepartmentFullView InsertChild(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
             DepartmentFullView childDepartment = GetTestChildDepartment(parentDepartmentGuid, childDepartmentGuid);
 
-            return _logicHelper.DepartmentLogic.Insert(childDepartment);
+            return _appServices.DepartmentLogic.Insert(childDepartment);
         }
 
 
         public override void Delete(Guid departmentGuid)
         {
-            _logicHelper.DepartmentLogic.Delete(departmentGuid);
+            _appServices.DepartmentLogic.Delete(departmentGuid);
         }
 
         public override void CleanUp()

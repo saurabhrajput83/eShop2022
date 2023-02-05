@@ -1,35 +1,36 @@
 ﻿using AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logics;
 using eShop.DAL.Entities;
-using eShop.DAL.Infrastructure;
+
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class SelectedItemLogicHelper : BaseHelper<SelectedItemFullView>
     {
-        private readonly ILogicHelper _logicHelper;
-        private readonly ProductLogicHelper _productLogicHelper;
-        private readonly ShoppingCartLogicHelper _shoppingCartLogicHelper;
+        private readonly IAppServices _appServices;
+        private readonly ProductLogicHelper _ProductLogicHelper;
+        private readonly ShoppingCartLogicHelper _ShoppingCartLogicHelper;
 
-        public SelectedItemLogicHelper(ILogicHelper logicHelper)
+        public SelectedItemLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
-            _productLogicHelper= new ProductLogicHelper(_logicHelper);
-            _shoppingCartLogicHelper = new ShoppingCartLogicHelper(_logicHelper);
+            _appServices = AppServices;
+            _ProductLogicHelper= new ProductLogicHelper(_appServices);
+            _ShoppingCartLogicHelper = new ShoppingCartLogicHelper(_appServices);
         }
 
         public SelectedItemFullView GetTestSelectedItemView(Guid selectedItemGuid)
         {
-            ProductFullView product = _productLogicHelper.Insert(Constants.ProductGuid);
-            ShoppingCartView shoppingCart = _shoppingCartLogicHelper.Insert(Constants.ShoppingCartGuid);
+            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
+            ShoppingCartView shoppingCart = _ShoppingCartLogicHelper.Insert(Constants.ShoppingCartGuid);
 
             SelectedItemFullView  selectedItem = new SelectedItemFullView()
             {
@@ -49,20 +50,20 @@ namespace eShop.BLL.Test.Helpers
         public override SelectedItemFullView Insert(Guid selectedItemGuid)
         {
             SelectedItemFullView selectedItemView = GetTestSelectedItemView(selectedItemGuid);
-            return _logicHelper.SelectedItemLogic.Insert(selectedItemView);
+            return _appServices.SelectedItemLogic.Insert(selectedItemView);
         }
 
         public override void Delete(Guid selectedItemGuid)
         {
-            _logicHelper.SelectedItemLogic.Delete(selectedItemGuid);
+            _appServices.SelectedItemLogic.Delete(selectedItemGuid);
         }
 
         public override void CleanUp()
         {
-            _shoppingCartLogicHelper.Delete(Constants.ShoppingCartGuid);
-            _shoppingCartLogicHelper.CleanUp();
-            _productLogicHelper.Delete(Constants.ProductGuid);
-            _productLogicHelper.CleanUp();
+            _ShoppingCartLogicHelper.Delete(Constants.ShoppingCartGuid);
+            _ShoppingCartLogicHelper.CleanUp();
+            _ProductLogicHelper.Delete(Constants.ProductGuid);
+            _ProductLogicHelper.CleanUp();
         }
 
     }

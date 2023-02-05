@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
+using eShop.BLL.Services;
 using eShop.DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,18 @@ namespace eShop.BLL.Test.Helpers
 {
     public class ProductLogicHelper : BaseHelper<ProductFullView>
     {
-        private readonly ILogicHelper _logicHelper;
-        private readonly BrandLogicHelper _brandLogicHelper;
+        private readonly IAppServices _appServices;
+        private readonly BrandLogicHelper _BrandLogicHelper;
 
-        public ProductLogicHelper(ILogicHelper logicHelper)
+        public ProductLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
-            _brandLogicHelper= new BrandLogicHelper(_logicHelper);
+            _appServices = AppServices;
+            _BrandLogicHelper= new BrandLogicHelper(_appServices);
         }
 
         public ProductFullView GetTestProductView(Guid productGuid)
         {
-            BrandFullView brand = _brandLogicHelper.Insert(Constants.BrandGuid);
+            BrandFullView brand = _BrandLogicHelper.Insert(Constants.BrandGuid);
 
             ProductFullView productView = new ProductFullView()
             {
@@ -57,18 +58,18 @@ namespace eShop.BLL.Test.Helpers
         public override ProductFullView Insert(Guid productGuid)
         {
             ProductFullView productView = GetTestProductView(productGuid);
-            return _logicHelper.ProductLogic.Insert(productView);
+            return _appServices.ProductLogic.Insert(productView);
         }
 
         public override void Delete(Guid productGuid)
         {
-            _logicHelper.ProductLogic.Delete(productGuid);
+            _appServices.ProductLogic.Delete(productGuid);
         }
 
         public override void CleanUp()
         {
-            _brandLogicHelper.Delete(Constants.BrandGuid);
-            _brandLogicHelper.CleanUp();
+            _BrandLogicHelper.Delete(Constants.BrandGuid);
+            _BrandLogicHelper.CleanUp();
         }
 
     }

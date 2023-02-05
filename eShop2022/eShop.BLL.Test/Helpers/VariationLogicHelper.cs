@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,23 +13,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class VariationLogicHelper : BaseHelper<VariationFullView>
     {
-        private readonly ILogicHelper _logicHelper;
-        private readonly VariationTypeLogicHelper _variationTypeLogicHelper;
+        private readonly IAppServices _appServices;
+        private readonly VariationTypeLogicHelper _VariationTypeLogicHelper;
 
-        public VariationLogicHelper(ILogicHelper logicHelper)
+        public VariationLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
-            _variationTypeLogicHelper = new VariationTypeLogicHelper(_logicHelper);
+            _appServices = AppServices;
+            _VariationTypeLogicHelper = new VariationTypeLogicHelper(_appServices);
         }
 
         public VariationFullView GetTestVariationView(Guid variationGuid)
         {
-            VariationTypeFullView variationType = _variationTypeLogicHelper.Insert(Constants.VariationTypeGuid);
+            VariationTypeFullView variationType = _VariationTypeLogicHelper.Insert(Constants.VariationTypeGuid);
 
             VariationFullView variationView = new VariationFullView()
             {
@@ -49,18 +50,18 @@ namespace eShop.BLL.Test.Helpers
         public override VariationFullView Insert(Guid variationGuid)
         {
             VariationFullView variationView = GetTestVariationView(variationGuid);
-            return _logicHelper.VariationLogic.Insert(variationView);
+            return _appServices.VariationLogic.Insert(variationView);
         }
 
         public override void Delete(Guid variationGuid)
         {
-            _logicHelper.VariationLogic.Delete(variationGuid);
+            _appServices.VariationLogic.Delete(variationGuid);
         }
 
         public override void CleanUp()
         {
-            _variationTypeLogicHelper.Delete(Constants.VariationTypeGuid);
-            _variationTypeLogicHelper.CleanUp();
+            _VariationTypeLogicHelper.Delete(Constants.VariationTypeGuid);
+            _VariationTypeLogicHelper.CleanUp();
         }
 
     }

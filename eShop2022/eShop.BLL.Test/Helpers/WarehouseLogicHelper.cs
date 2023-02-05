@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,16 +12,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class WarehouseLogicHelper : BaseHelper<WarehouseFullView>
     {
-        private readonly ILogicHelper _logicHelper;
+        private readonly IAppServices _appServices;
 
-        public WarehouseLogicHelper(ILogicHelper logicHelper)
+        public WarehouseLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
+            _appServices = AppServices;
         }
 
         public WarehouseFullView GetTestWarehouseView(Guid warehouseGuid)
@@ -44,12 +45,12 @@ namespace eShop.BLL.Test.Helpers
         public override WarehouseFullView Insert(Guid warehouseGuid)
         {
             WarehouseFullView warehouseView = GetTestWarehouseView(warehouseGuid);
-            return _logicHelper.WarehouseLogic.Insert(warehouseView);
+            return _appServices.WarehouseLogic.Insert(warehouseView);
         }
 
         public override void Delete(Guid warehouseGuid)
         {
-            _logicHelper.WarehouseLogic.Delete(warehouseGuid);
+            _appServices.WarehouseLogic.Delete(warehouseGuid);
         }
 
         public override void CleanUp()

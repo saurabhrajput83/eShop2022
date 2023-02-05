@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class VariationTypeLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly VariationTypeLogicHelper _variationTypeLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly VariationTypeLogicHelper _VariationTypeLogicHelper;
         
         public VariationTypeLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _variationTypeLogicHelper = new VariationTypeLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _VariationTypeLogicHelper = new VariationTypeLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             VariationTypeFullView variationTypeView;
 
             // Act
-            variationTypeView = _variationTypeLogicHelper.Insert(Constants.VariationTypeGuid);
+            variationTypeView = _VariationTypeLogicHelper.Insert(Constants.VariationTypeGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariationType(variationTypeView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<VariationTypeMinimalView> variationTypes;
 
             // Act
-            variationTypes = _logicHelper.VariationTypeLogic.GetAll();
+            variationTypes = _appServices.VariationTypeLogic.GetAll();
 
             // Assert
             Assert.IsTrue(variationTypes.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             VariationTypeFullView variationTypeView;
 
             // Act
-            variationTypeView = _logicHelper.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
+            variationTypeView = _appServices.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariationType(variationTypeView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            variationTypeView = _logicHelper.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
+            variationTypeView = _appServices.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
 
             variationTypeView.Name = newVariationTypeName;
-            _logicHelper.VariationTypeLogic.Update(variationTypeView);
+            _appServices.VariationTypeLogic.Update(variationTypeView);
 
-            variationTypeView = _logicHelper.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
+            variationTypeView = _appServices.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateVariationType(variationTypeView) && variationTypeView.Name == newVariationTypeName);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             VariationTypeFullView variationTypeView;
 
             // Act
-            _variationTypeLogicHelper.Delete(Constants.VariationTypeGuid);
-            _variationTypeLogicHelper.CleanUp();
+            _VariationTypeLogicHelper.Delete(Constants.VariationTypeGuid);
+            _VariationTypeLogicHelper.CleanUp();
 
-            variationTypeView = _logicHelper.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
+            variationTypeView = _appServices.VariationTypeLogic.GetByGuid(Constants.VariationTypeGuid);
 
             // Assert
             Assert.IsTrue(variationTypeView.IsNull());

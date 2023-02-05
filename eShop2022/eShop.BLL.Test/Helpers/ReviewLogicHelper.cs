@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,23 +13,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class ReviewLogicHelper : BaseHelper<ReviewView>
     {
-        private readonly ILogicHelper _logicHelper;
-        private readonly ProductLogicHelper _productLogicHelper;
+        private readonly IAppServices _appServices;
+        private readonly ProductLogicHelper _ProductLogicHelper;
 
-        public ReviewLogicHelper(ILogicHelper logicHelper)
+        public ReviewLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
-            _productLogicHelper= new ProductLogicHelper(_logicHelper);
+            _appServices = AppServices;
+            _ProductLogicHelper= new ProductLogicHelper(_appServices);
         }
 
         public ReviewView GetTestReviewView(Guid reviewGuid)
         {
-            ProductFullView product = _productLogicHelper.Insert(Constants.ProductGuid);
+            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
 
             ReviewView reviewView = new ReviewView()
             {
@@ -51,18 +52,18 @@ namespace eShop.BLL.Test.Helpers
         public override ReviewView Insert(Guid reviewGuid)
         {
             ReviewView reviewView = GetTestReviewView(reviewGuid);
-            return _logicHelper.ReviewLogic.Insert(reviewView);
+            return _appServices.ReviewLogic.Insert(reviewView);
         }
 
         public override void Delete(Guid reviewGuid)
         {
-            _logicHelper.ReviewLogic.Delete(reviewGuid);
+            _appServices.ReviewLogic.Delete(reviewGuid);
         }
 
         public override void CleanUp()
         {
-            _productLogicHelper.Delete(Constants.ProductGuid);
-            _productLogicHelper.CleanUp();
+            _ProductLogicHelper.Delete(Constants.ProductGuid);
+            _ProductLogicHelper.CleanUp();
         }
 
     }

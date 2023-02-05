@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class DepartmentProductLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly DepartmentProductLogicHelper _departmentProductLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly DepartmentProductLogicHelper _DepartmentProductLogicHelper;
         
         public DepartmentProductLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _departmentProductLogicHelper = new DepartmentProductLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _DepartmentProductLogicHelper = new DepartmentProductLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             DepartmentProductFullView departmentProductView;
 
             // Act
-            departmentProductView = _departmentProductLogicHelper.Insert(Constants.DepartmentProductGuid);
+            departmentProductView = _DepartmentProductLogicHelper.Insert(Constants.DepartmentProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartmentProduct(departmentProductView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<DepartmentProductMinimalView> departmentProducts;
 
             // Act
-            departmentProducts = _logicHelper.DepartmentProductLogic.GetAll();
+            departmentProducts = _appServices.DepartmentProductLogic.GetAll();
 
             // Assert
             Assert.IsTrue(departmentProducts.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             DepartmentProductFullView departmentProductView;
 
             // Act
-            departmentProductView = _logicHelper.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
+            departmentProductView = _appServices.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartmentProduct(departmentProductView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
         //    // Act
-        //    departmentProductView = _logicHelper.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
+        //    departmentProductView = _appServices.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
 
         //    departmentProductView.Name = newDepartmentProductName;
-        //    _logicHelper.DepartmentProductLogic.Update(departmentProductView);
+        //    _appServices.DepartmentProductLogic.Update(departmentProductView);
 
-        //    departmentProductView = _logicHelper.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
+        //    departmentProductView = _appServices.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
 
         //    // Assert
         //    Assert.IsTrue(ValidationHelper.ValidateDepartmentProduct(departmentProductView) && departmentProductView.Name == newDepartmentProductName);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             DepartmentProductFullView departmentProductView;
 
             // Act
-            _departmentProductLogicHelper.Delete(Constants.DepartmentProductGuid);
-            _departmentProductLogicHelper.CleanUp();
+            _DepartmentProductLogicHelper.Delete(Constants.DepartmentProductGuid);
+            _DepartmentProductLogicHelper.CleanUp();
 
-            departmentProductView = _logicHelper.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
+            departmentProductView = _appServices.DepartmentProductLogic.GetByGuid(Constants.DepartmentProductGuid);
 
             // Assert
             Assert.IsTrue(departmentProductView.IsNull());

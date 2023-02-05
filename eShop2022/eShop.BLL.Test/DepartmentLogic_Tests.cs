@@ -1,32 +1,33 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class DepartmentLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly DepartmentLogicHelper _departmentLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly DepartmentLogicHelper _DepartmentLogicHelper;
         
         public DepartmentLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _departmentLogicHelper = new DepartmentLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _DepartmentLogicHelper = new DepartmentLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -41,7 +42,7 @@ namespace eShop.BLL.Test
             DepartmentFullView DepartmentView;
 
             // Act
-            DepartmentView = _departmentLogicHelper.Insert(Constants.DepartmentGuid);
+            DepartmentView = _DepartmentLogicHelper.Insert(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView));
@@ -55,7 +56,7 @@ namespace eShop.BLL.Test
             DepartmentFullView childDepartment;
 
             // Act
-            childDepartment = _departmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
+            childDepartment = _DepartmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateChildDepartment(childDepartment));
@@ -69,7 +70,7 @@ namespace eShop.BLL.Test
             List<DepartmentMinimalView> Departments;
 
             // Act
-            Departments = _logicHelper.DepartmentLogic.GetAll();
+            Departments = _appServices.DepartmentLogic.GetAll();
 
             // Assert
             Assert.IsTrue(Departments.IsNotEmpty());
@@ -82,7 +83,7 @@ namespace eShop.BLL.Test
             DepartmentFullView DepartmentView;
 
             // Act
-            DepartmentView = _logicHelper.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView));
@@ -97,12 +98,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            DepartmentView = _logicHelper.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
 
             DepartmentView.Name = newDepartmentName;
-            _logicHelper.DepartmentLogic.Update(DepartmentView);
+            _appServices.DepartmentLogic.Update(DepartmentView);
 
-            DepartmentView = _logicHelper.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(DepartmentView) && DepartmentView.Name == newDepartmentName);
@@ -115,11 +116,11 @@ namespace eShop.BLL.Test
             DepartmentFullView DepartmentView;
 
             // Act
-            _departmentLogicHelper.Delete(Constants.DepartmentGuid);
-            _departmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
-            _departmentLogicHelper.CleanUp();
+            _DepartmentLogicHelper.Delete(Constants.DepartmentGuid);
+            _DepartmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
+            _DepartmentLogicHelper.CleanUp();
 
-            DepartmentView = _logicHelper.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
+            DepartmentView = _appServices.DepartmentLogic.GetByGuid(Constants.DepartmentGuid);
 
             // Assert
             Assert.IsTrue(DepartmentView.IsNull());

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.DAL.Entities;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,27 +13,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class DepartmentProductLogicHelper : BaseHelper<DepartmentProductFullView>
     {
-        private readonly ILogicHelper _logicHelper;
-        private readonly DepartmentLogicHelper _departmentLogicHelper;
-        private readonly ProductLogicHelper _productLogicHelper;
+        private readonly IAppServices _appServices;
+        private readonly DepartmentLogicHelper _DepartmentLogicHelper;
+        private readonly ProductLogicHelper _ProductLogicHelper;
 
-        public DepartmentProductLogicHelper(ILogicHelper logicHelper)
+        public DepartmentProductLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
-            _departmentLogicHelper= new DepartmentLogicHelper(_logicHelper);
-            _productLogicHelper = new ProductLogicHelper(_logicHelper); 
+            _appServices = AppServices;
+            _DepartmentLogicHelper= new DepartmentLogicHelper(_appServices);
+            _ProductLogicHelper = new ProductLogicHelper(_appServices); 
         }
 
         public DepartmentProductFullView GetTestDepartmentProductView(Guid departmentProductGuid)
         {
-            DepartmentFullView parentDepartment = _departmentLogicHelper.Insert(Constants.DepartmentGuid);
-            DepartmentFullView childDepartment = _departmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
-            ProductFullView product = _productLogicHelper.Insert(Constants.ProductGuid);
+            DepartmentFullView parentDepartment = _DepartmentLogicHelper.Insert(Constants.DepartmentGuid);
+            DepartmentFullView childDepartment = _DepartmentLogicHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
+            ProductFullView product = _ProductLogicHelper.Insert(Constants.ProductGuid);
 
             DepartmentProductFullView departmentProduct = new DepartmentProductFullView()
             {
@@ -51,22 +52,22 @@ namespace eShop.BLL.Test.Helpers
         public override DepartmentProductFullView Insert(Guid departmentProductGuid)
         {
             DepartmentProductFullView departmentProductView = GetTestDepartmentProductView(departmentProductGuid);
-            return _logicHelper.DepartmentProductLogic.Insert(departmentProductView);
+            return _appServices.DepartmentProductLogic.Insert(departmentProductView);
         }
 
         public override void Delete(Guid departmentProductGuid)
         {
-            _logicHelper.DepartmentProductLogic.Delete(departmentProductGuid);
+            _appServices.DepartmentProductLogic.Delete(departmentProductGuid);
         }
 
         public override void CleanUp()
         {
-            _departmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
-            _departmentLogicHelper.Delete(Constants.DepartmentGuid);
-            _departmentLogicHelper.CleanUp();
+            _DepartmentLogicHelper.Delete(Constants.ChildDepartmentGuid);
+            _DepartmentLogicHelper.Delete(Constants.DepartmentGuid);
+            _DepartmentLogicHelper.CleanUp();
 
-            _productLogicHelper.Delete(Constants.ProductGuid);
-            _productLogicHelper.CleanUp();
+            _ProductLogicHelper.Delete(Constants.ProductGuid);
+            _ProductLogicHelper.CleanUp();
         }
 
     }

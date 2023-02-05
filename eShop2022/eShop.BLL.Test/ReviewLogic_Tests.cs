@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class ReviewLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly ReviewLogicHelper _reviewLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly ReviewLogicHelper _ReviewLogicHelper;
         
         public ReviewLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _reviewLogicHelper = new ReviewLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _ReviewLogicHelper = new ReviewLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             ReviewView reviewView;
 
             // Act
-            reviewView = _reviewLogicHelper.Insert(Constants.ReviewGuid);
+            reviewView = _ReviewLogicHelper.Insert(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<ReviewView> reviews;
 
             // Act
-            reviews = _logicHelper.ReviewLogic.GetAll();
+            reviews = _appServices.ReviewLogic.GetAll();
 
             // Assert
             Assert.IsTrue(reviews.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             ReviewView reviewView;
 
             // Act
-            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             reviewView.Headline = newHeadline;
-            _logicHelper.ReviewLogic.Update(reviewView);
+            _appServices.ReviewLogic.Update(reviewView);
 
-            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(reviewView) && reviewView.Headline == newHeadline);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             ReviewView reviewView;
 
             // Act
-            _reviewLogicHelper.Delete(Constants.ReviewGuid);
-            _reviewLogicHelper.CleanUp();
+            _ReviewLogicHelper.Delete(Constants.ReviewGuid);
+            _ReviewLogicHelper.CleanUp();
 
-            reviewView = _logicHelper.ReviewLogic.GetByGuid(Constants.ReviewGuid);
+            reviewView = _appServices.ReviewLogic.GetByGuid(Constants.ReviewGuid);
 
             // Assert
             Assert.IsTrue(reviewView.IsNull());

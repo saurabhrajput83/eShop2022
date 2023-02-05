@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class WarehouseLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly WarehouseLogicHelper _warehouseLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly WarehouseLogicHelper _WarehouseLogicHelper;
         
         public WarehouseLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _warehouseLogicHelper = new WarehouseLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _WarehouseLogicHelper = new WarehouseLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             WarehouseFullView warehouseView;
 
             // Act
-            warehouseView = _warehouseLogicHelper.Insert(Constants.WarehouseGuid);
+            warehouseView = _WarehouseLogicHelper.Insert(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<WarehouseMinimalView> warehouses;
 
             // Act
-            warehouses = _logicHelper.WarehouseLogic.GetAll();
+            warehouses = _appServices.WarehouseLogic.GetAll();
 
             // Assert
             Assert.IsTrue(warehouses.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             WarehouseFullView warehouseView;
 
             // Act
-            warehouseView = _logicHelper.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            warehouseView = _logicHelper.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
 
             warehouseView.Name = newWarehouseName;
-            _logicHelper.WarehouseLogic.Update(warehouseView);
+            _appServices.WarehouseLogic.Update(warehouseView);
 
-            warehouseView = _logicHelper.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouseView) && warehouseView.Name == newWarehouseName);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             WarehouseFullView warehouseView;
 
             // Act
-            _warehouseLogicHelper.Delete(Constants.WarehouseGuid);
-            _warehouseLogicHelper.CleanUp();
+            _WarehouseLogicHelper.Delete(Constants.WarehouseGuid);
+            _WarehouseLogicHelper.CleanUp();
 
-            warehouseView = _logicHelper.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
+            warehouseView = _appServices.WarehouseLogic.GetByGuid(Constants.WarehouseGuid);
 
             // Assert
             Assert.IsTrue(warehouseView.IsNull());

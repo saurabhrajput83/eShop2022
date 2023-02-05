@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+
 using eShop.DAL.Main;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,16 +12,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test.Helpers
 {
     public class VariationTypeLogicHelper : BaseHelper<VariationTypeFullView>
     {
-        private readonly ILogicHelper _logicHelper;
+        private readonly IAppServices _appServices;
 
-        public VariationTypeLogicHelper(ILogicHelper logicHelper)
+        public VariationTypeLogicHelper(IAppServices AppServices)
         {
-            _logicHelper = logicHelper;
+            _appServices = AppServices;
         }
 
         public VariationTypeFullView GetTestVariationTypeView(Guid variationTypeGuid)
@@ -42,12 +43,12 @@ namespace eShop.BLL.Test.Helpers
         public override VariationTypeFullView Insert(Guid variationTypeGuid)
         {
             VariationTypeFullView variationTypeView = GetTestVariationTypeView(variationTypeGuid);
-            return _logicHelper.VariationTypeLogic.Insert(variationTypeView);
+            return _appServices.VariationTypeLogic.Insert(variationTypeView);
         }
 
         public override void Delete(Guid variationTypeGuid)
         {
-            _logicHelper.VariationTypeLogic.Delete(variationTypeGuid);
+            _appServices.VariationTypeLogic.Delete(variationTypeGuid);
         }
 
         public override void CleanUp()

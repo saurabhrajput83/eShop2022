@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class ProductLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly ProductLogicHelper _productLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly ProductLogicHelper _ProductLogicHelper;
 
         public ProductLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _productLogicHelper = new ProductLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _ProductLogicHelper = new ProductLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             ProductFullView productView;
 
             // Act
-            productView = _productLogicHelper.Insert(Constants.ProductGuid);
+            productView = _ProductLogicHelper.Insert(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<ProductMinimalView> products;
 
             // Act
-            products = _logicHelper.ProductLogic.GetAll();
+            products = _appServices.ProductLogic.GetAll();
 
             // Assert
             Assert.IsTrue(products.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             ProductFullView productView;
 
             // Act
-            productView = _logicHelper.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
             // Act
-            productView = _logicHelper.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
 
             productView.Name = newProductName;
-            _logicHelper.ProductLogic.Update(productView);
+            _appServices.ProductLogic.Update(productView);
 
-            productView = _logicHelper.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(productView) && productView.Name == newProductName);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             ProductFullView productView;
 
             // Act
-            _productLogicHelper.Delete(Constants.ProductGuid);
-            _productLogicHelper.CleanUp();
+            _ProductLogicHelper.Delete(Constants.ProductGuid);
+            _ProductLogicHelper.CleanUp();
 
-            productView = _logicHelper.ProductLogic.GetByGuid(Constants.ProductGuid);
+            productView = _appServices.ProductLogic.GetByGuid(Constants.ProductGuid);
 
             // Assert
             Assert.IsTrue(productView.IsNull());

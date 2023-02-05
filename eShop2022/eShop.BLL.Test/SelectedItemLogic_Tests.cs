@@ -1,31 +1,32 @@
 using AutoMapper;
 using eShop.BLL.AutoMapper;
 using eShop.BLL.Dtos;
-using eShop.BLL.Interfaces;
+using eShop.BLL.Logics.Interfaces;
 using eShop.BLL.Logging;
 using eShop.BLL.Logics;
 using eShop.BLL.Test.Helpers;
 using eShop.DAL.Implementations;
-using eShop.DAL.Infrastructure;
+using eShop.DAL.UnitOfWork;
 using eShop.DAL.Main;
 using eShop.Infrastructure.Extensions;
 using Microsoft.Extensions.Logging;
+using eShop.BLL.Services;
 
 namespace eShop.BLL.Test
 {
     public class SelectedItemLogic_Tests
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogicHelper _logicHelper;
-        private readonly SelectedItemLogicHelper _selectedItemLogicHelper;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
+        private readonly IAppServices _appServices;
+        private readonly SelectedItemLogicHelper _SelectedItemLogicHelper;
         
         public SelectedItemLogic_Tests()
         {
-            _eShopDbContext = new eShopDbContext();
-            _unitOfWork = new UnitOfWork(_eShopDbContext);
-            _logicHelper = new LogicHelper(_unitOfWork);
-            _selectedItemLogicHelper = new SelectedItemLogicHelper(_logicHelper);
+             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
+            _appServices = new AppServices(_unitOfWork);
+            _SelectedItemLogicHelper = new SelectedItemLogicHelper(_appServices);
         }
 
         [SetUp]
@@ -40,7 +41,7 @@ namespace eShop.BLL.Test
             SelectedItemFullView selectedItemView;
 
             // Act
-            selectedItemView = _selectedItemLogicHelper.Insert(Constants.SelectedItemGuid);
+            selectedItemView = _SelectedItemLogicHelper.Insert(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView));
@@ -53,7 +54,7 @@ namespace eShop.BLL.Test
             List<SelectedItemMinimalView> selectedItems;
 
             // Act
-            selectedItems = _logicHelper.SelectedItemLogic.GetAll();
+            selectedItems = _appServices.SelectedItemLogic.GetAll();
 
             // Assert
             Assert.IsTrue(selectedItems.IsNotEmpty());
@@ -66,7 +67,7 @@ namespace eShop.BLL.Test
             SelectedItemFullView selectedItemView;
 
             // Act
-            selectedItemView = _logicHelper.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+            selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView));
@@ -81,12 +82,12 @@ namespace eShop.BLL.Test
 
 
         //    // Act
-        //    selectedItemView = _logicHelper.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
 
         //    selectedItemView.Name = newSelectedItemName;
-        //    _logicHelper.SelectedItemLogic.Update(selectedItemView);
+        //    _appServices.SelectedItemLogic.Update(selectedItemView);
 
-        //    selectedItemView = _logicHelper.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+        //    selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
 
         //    // Assert
         //    Assert.IsTrue(ValidationHelper.ValidateSelectedItem(selectedItemView) && selectedItemView.Name == newSelectedItemName);
@@ -99,10 +100,10 @@ namespace eShop.BLL.Test
             SelectedItemFullView selectedItemView;
 
             // Act
-            _selectedItemLogicHelper.Delete(Constants.SelectedItemGuid);
-            _selectedItemLogicHelper.CleanUp();
+            _SelectedItemLogicHelper.Delete(Constants.SelectedItemGuid);
+            _SelectedItemLogicHelper.CleanUp();
 
-            selectedItemView = _logicHelper.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
+            selectedItemView = _appServices.SelectedItemLogic.GetByGuid(Constants.SelectedItemGuid);
 
             // Assert
             Assert.IsTrue(selectedItemView.IsNull());
