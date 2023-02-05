@@ -1,5 +1,6 @@
 ﻿using eShop.DAL.Entities;
 using eShop.DAL.UnitOfWork;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +12,20 @@ namespace eShop.DAL.Test.Helpers
     public class ProductHelper : BaseHelper<Product>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly BrandHelper _brandHelper;
+    
 
-        public ProductHelper(IAppUnitOfWork unitOfWork)
+        public ProductHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
-            _brandHelper = new BrandHelper(_unitOfWork);
+            _token = token;
+            _brandHelper = new BrandHelper(_unitOfWork, _token);
         }
 
-        public Product GetTestProduct(Guid productGuid)
+        public async Task<Product> GetTestProduct(Guid productGuid)
         {
-            Brand brand = _brandHelper.Insert(Constants.BrandGuid);
+            Brand brand = await _brandHelper.InsertAsync(Constants.BrandGuid);
 
             Product product = new Product()
             {
@@ -52,28 +56,28 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Product Insert(Guid productGuid)
+        public override async Task<Product> InsertAsync(Guid productGuid)
         {
-            Product product = GetTestProduct(productGuid);
+            Product product = await GetTestProduct(productGuid);
 
-            _unitOfWork.ProductRepository.Insert(product);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.ProductRepository.InsertAsync(product, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return product;
         }
 
-        public override void Delete(Guid productGuid)
+        public override async Task DeleteAsync(Guid productGuid)
         {
-            Product product = _unitOfWork.ProductRepository.GetByGuid(productGuid);
+            Product product = await _unitOfWork.ProductRepository.GetByGuidAsync(productGuid, _token);
 
-            _unitOfWork.ProductRepository.Delete(product);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.ProductRepository.Delete(product, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _brandHelper.Delete(Constants.BrandGuid);
-            _brandHelper.CleanUp();
+            await _brandHelper.DeleteAsync(Constants.BrandGuid);
+            await _brandHelper.CleanUpAsync();
         }
 
     }

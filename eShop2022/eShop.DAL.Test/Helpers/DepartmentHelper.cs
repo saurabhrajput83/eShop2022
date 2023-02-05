@@ -12,10 +12,13 @@ namespace eShop.DAL.Test.Helpers
     public class DepartmentHelper : BaseHelper<Department>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
 
-        public DepartmentHelper(IAppUnitOfWork unitOfWork)
+
+        public DepartmentHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
+            _token = token;
         }
 
         public Department GetTestDepartment(Guid departmentGuid)
@@ -35,9 +38,9 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public Department GetTestChildDepartment(Guid parentDepartmentGuid, Guid childDepartmentGuid)
+        public async Task<Department> GetTestChildDepartment(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
-            Department parentDepartment = _unitOfWork.DepartmentRepository.GetByGuid(parentDepartmentGuid);
+            Department parentDepartment = await _unitOfWork.DepartmentRepository.GetByGuidAsync(parentDepartmentGuid, _token);
 
             Department childDepartment = new Department()
             {
@@ -54,35 +57,35 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Department Insert(Guid departmentGuid)
+        public override async Task<Department> InsertAsync(Guid departmentGuid)
         {
             Department department = GetTestDepartment(departmentGuid);
 
-            _unitOfWork.DepartmentRepository.Insert(department);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.DepartmentRepository.InsertAsync(department, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return department;
         }
 
-        public Department InsertChild(Guid parentDepartmentGuid, Guid childDepartmentGuid)
+        public async Task<Department> InsertChildAsync(Guid parentDepartmentGuid, Guid childDepartmentGuid)
         {
-            Department childDepartment = GetTestChildDepartment(parentDepartmentGuid, childDepartmentGuid);
+            Department childDepartment = await GetTestChildDepartment(parentDepartmentGuid, childDepartmentGuid);
 
-            _unitOfWork.DepartmentRepository.Insert(childDepartment);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.DepartmentRepository.InsertAsync(childDepartment, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return childDepartment;
         }
 
-        public override void Delete(Guid departmentGuid)
+        public override async Task DeleteAsync(Guid departmentGuid)
         {
-            Department department = _unitOfWork.DepartmentRepository.GetByGuid(departmentGuid);
+            Department department = await _unitOfWork.DepartmentRepository.GetByGuidAsync(departmentGuid, _token);
 
-            _unitOfWork.DepartmentRepository.Delete(department);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.DepartmentRepository.Delete(department, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
 
         }

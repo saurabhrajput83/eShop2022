@@ -6,6 +6,7 @@ using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace eShop.DAL.Test
 {
@@ -14,6 +15,7 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly DepartmentHelper _departmentHelper;
         private readonly ProductHelper _productHelper;
         private readonly BrandHelper _brandHelper;
@@ -23,10 +25,11 @@ namespace eShop.DAL.Test
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _departmentHelper = new DepartmentHelper(_unitOfWork);
-            _productHelper = new ProductHelper(_unitOfWork);
-            _brandHelper = new BrandHelper(_unitOfWork);
-            _departmentProductHelper = new DepartmentProductHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _departmentHelper = new DepartmentHelper(_unitOfWork, _token);
+            _productHelper = new ProductHelper(_unitOfWork, _token);
+            _brandHelper = new BrandHelper(_unitOfWork, _token);
+            _departmentProductHelper = new DepartmentProductHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -35,13 +38,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             DepartmentProduct departmentProduct;
 
             // Act
-            departmentProduct = _departmentProductHelper.Insert(Constants.DepartmentProductGuid);
+            departmentProduct = await _departmentProductHelper.InsertAsync(Constants.DepartmentProductGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartmentProduct(departmentProduct));
@@ -49,26 +52,26 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<DepartmentProduct> departmentProducts;
 
             // Act
-            departmentProducts = _unitOfWork.DepartmentProductRepository.GetAll().ToList();
+            departmentProducts = await _unitOfWork.DepartmentProductRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(departmentProducts.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             DepartmentProduct departmentProduct;
 
             // Act
-            departmentProduct = _unitOfWork.DepartmentProductRepository.GetByGuid(Constants.DepartmentProductGuid);
+            departmentProduct = await _unitOfWork.DepartmentProductRepository.GetByGuidAsync(Constants.DepartmentProductGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartmentProduct(departmentProduct));
@@ -77,16 +80,16 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test4_Delete()
+        public async Task Test4_Delete()
         {
             //Arrange
             DepartmentProduct departmentProduct;
 
             // Act
-            _departmentProductHelper.Delete(Constants.DepartmentProductGuid);
-            _departmentProductHelper.CleanUp();
+            await _departmentProductHelper.DeleteAsync(Constants.DepartmentProductGuid);
+            await _departmentProductHelper.CleanUpAsync();
 
-            departmentProduct = _unitOfWork.DepartmentProductRepository.GetByGuid(Constants.DepartmentProductGuid);
+            departmentProduct = await _unitOfWork.DepartmentProductRepository.GetByGuidAsync(Constants.DepartmentProductGuid, _token);
 
 
             //Assert

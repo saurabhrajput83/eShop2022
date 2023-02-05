@@ -14,18 +14,15 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly InventoryHelper _inventoryHelper;
 
         public InventoryRepository_Tests()
         {
-            DbContextOptions<AppDbContext> dbContextOptions =
-            new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "eShopDb")
-            .Options;
-
-            _eShopDbContext = new AppDbContext(dbContextOptions);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _token = new CancellationToken();
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _inventoryHelper = new InventoryHelper(_unitOfWork);
+            _inventoryHelper = new InventoryHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -34,13 +31,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Inventory inventory;
 
             // Act
-            inventory = _inventoryHelper.Insert(Constants.InventoryGuid);
+            inventory = await _inventoryHelper.InsertAsync(Constants.InventoryGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateInventory(inventory));
@@ -48,33 +45,33 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<Inventory> inventories;
 
             // Act
-            inventories = _unitOfWork.InventoryRepository.GetAll().ToList();
+            inventories = await _unitOfWork.InventoryRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(inventories.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             Inventory inventory;
 
             // Act
-            inventory = _unitOfWork.InventoryRepository.GetByGuid(Constants.InventoryGuid);
+            inventory = await _unitOfWork.InventoryRepository.GetByGuidAsync(Constants.InventoryGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateInventory(inventory));
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             Inventory inventory;
@@ -82,13 +79,13 @@ namespace eShop.DAL.Test
             int newAlertQuantity = 20;
 
             // Act
-            inventory = _unitOfWork.InventoryRepository.GetByGuid(Constants.InventoryGuid);
+            inventory = await _unitOfWork.InventoryRepository.GetByGuidAsync(Constants.InventoryGuid, _token);
             if (inventory != null)
             {
                 inventory.Quantity = newQuantity;
                 inventory.AlertQuantity = newAlertQuantity;
-                _unitOfWork.InventoryRepository.Update(inventory);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.InventoryRepository.Update(inventory, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -98,16 +95,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             Inventory inventory;
 
             // Act
-            _inventoryHelper.Delete(Constants.InventoryGuid);
-            _inventoryHelper.CleanUp();
+            await _inventoryHelper.DeleteAsync(Constants.InventoryGuid);
+            await _inventoryHelper.CleanUpAsync();
 
-            inventory = _unitOfWork.InventoryRepository.GetByGuid(Constants.InventoryGuid);
+            inventory = await _unitOfWork.InventoryRepository.GetByGuidAsync(Constants.InventoryGuid, _token);
 
             //Assert
             Assert.IsTrue(inventory.IsNull());

@@ -11,10 +11,13 @@ namespace eShop.DAL.Test.Helpers
     public class BrandHelper : BaseHelper<Brand>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
 
-        public BrandHelper(IAppUnitOfWork unitOfWork)
+
+        public BrandHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
+            _token = token;
         }
 
         public Brand GetTestBrand(Guid brandGuid)
@@ -33,26 +36,27 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Brand Insert(Guid brandGuid)
+        public override async Task<Brand> InsertAsync(Guid brandGuid)
         {
             Brand brand = GetTestBrand(brandGuid);
 
-            _unitOfWork.BrandRepository.Insert(brand);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.BrandRepository.InsertAsync(brand, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return brand;
         }
 
-        public override void Delete(Guid brandGuid)
+        public override async Task DeleteAsync(Guid brandGuid)
         {
-            Brand brand = _unitOfWork.BrandRepository.GetByGuid(Constants.BrandGuid);
+            Brand? brand = await _unitOfWork.BrandRepository.GetByGuidAsync(Constants.BrandGuid, _token);
 
-            _unitOfWork.BrandRepository.Delete(brand);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.BrandRepository.Delete(brand, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
+
         }
 
     }

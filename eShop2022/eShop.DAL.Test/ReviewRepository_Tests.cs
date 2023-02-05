@@ -6,6 +6,7 @@ using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace eShop.DAL.Test
 {
@@ -14,13 +15,15 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ReviewHelper _reviewHelper;
 
         public ReviewRepository_Tests()
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _reviewHelper = new ReviewHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _reviewHelper = new ReviewHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -29,13 +32,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Review review;
 
             // Act
-            review = _reviewHelper.Insert(Constants.ReviewGuid);
+            review = await _reviewHelper.InsertAsync(Constants.ReviewGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(review));
@@ -43,33 +46,33 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<Review> inventories;
 
             // Act
-            inventories = _unitOfWork.ReviewRepository.GetAll().ToList();
+            inventories = await _unitOfWork.ReviewRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(inventories.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             Review review;
 
             // Act
-            review = _unitOfWork.ReviewRepository.GetByGuid(Constants.ReviewGuid);
+            review = await _unitOfWork.ReviewRepository.GetByGuidAsync(Constants.ReviewGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateReview(review));
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             Review review;
@@ -77,13 +80,13 @@ namespace eShop.DAL.Test
             string newComments = "Test Review New Comments";
 
             // Act
-            review = _unitOfWork.ReviewRepository.GetByGuid(Constants.ReviewGuid);
+            review = await _unitOfWork.ReviewRepository.GetByGuidAsync(Constants.ReviewGuid, _token);
             if (review != null)
             {
                 review.Headline = newHeadline;
                 review.Comments = newComments;
-                _unitOfWork.ReviewRepository.Update(review);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.ReviewRepository.Update(review, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -93,16 +96,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             Review review;
 
             // Act
-            _reviewHelper.Delete(Constants.ReviewGuid);
-            _reviewHelper.CleanUp();
+            await _reviewHelper.DeleteAsync(Constants.ReviewGuid);
+            await _reviewHelper.CleanUpAsync();
 
-            review = _unitOfWork.ReviewRepository.GetByGuid(Constants.ReviewGuid);
+            review = await _unitOfWork.ReviewRepository.GetByGuidAsync(Constants.ReviewGuid, _token);
 
             //Assert
             Assert.IsTrue(review.IsNull());

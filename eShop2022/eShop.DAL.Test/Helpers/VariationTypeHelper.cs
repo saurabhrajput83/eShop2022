@@ -11,10 +11,12 @@ namespace eShop.DAL.Test.Helpers
     public class VariationTypeHelper : BaseHelper<VariationType>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
 
-        public VariationTypeHelper(IAppUnitOfWork unitOfWork)
+        public VariationTypeHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
+            _token = token;
         }
 
         public VariationType GetTestVariationType(Guid variationTypeGuid)
@@ -32,25 +34,25 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override VariationType Insert(Guid variationTypeGuid)
+        public override async Task<VariationType> InsertAsync(Guid variationTypeGuid)
         {
             VariationType variationType = GetTestVariationType(variationTypeGuid);
 
-            _unitOfWork.VariationTypeRepository.Insert(variationType);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.VariationTypeRepository.InsertAsync(variationType, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return variationType;
         }
 
-        public override void Delete(Guid variationTypeGuid)
+        public override async Task DeleteAsync(Guid variationTypeGuid)
         {
-            VariationType variationType = _unitOfWork.VariationTypeRepository.GetByGuid(Constants.VariationTypeGuid);
+            VariationType variationType = await _unitOfWork.VariationTypeRepository.GetByGuidAsync(Constants.VariationTypeGuid, _token);
 
-            _unitOfWork.VariationTypeRepository.Delete(variationType);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.VariationTypeRepository.Delete(variationType, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

@@ -14,6 +14,7 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ShoppingCartHelper _shoppingCartHelper;
 
         public ShoppingCartRepository_Tests()
@@ -21,7 +22,8 @@ namespace eShop.DAL.Test
 
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _shoppingCartHelper = new ShoppingCartHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _shoppingCartHelper = new ShoppingCartHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -30,13 +32,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             ShoppingCart shoppingCart;
 
             // Act
-            shoppingCart = _shoppingCartHelper.Insert(Constants.ShoppingCartGuid);
+            shoppingCart = await _shoppingCartHelper.InsertAsync(Constants.ShoppingCartGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateShoppingCart(shoppingCart));
@@ -44,33 +46,33 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<ShoppingCart> shoppingCarts;
 
             // Act
-            shoppingCarts = _unitOfWork.ShoppingCartRepository.GetAll().ToList();
+            shoppingCarts = await _unitOfWork.ShoppingCartRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(shoppingCarts.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             ShoppingCart shoppingCart;
 
             // Act
-            shoppingCart = _unitOfWork.ShoppingCartRepository.GetByGuid(Constants.ShoppingCartGuid);
+            shoppingCart = await _unitOfWork.ShoppingCartRepository.GetByGuidAsync(Constants.ShoppingCartGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateShoppingCart(shoppingCart));
         }
 
         //[TestMethod]
-        //public void Test4_Update()
+        //public async Task Test4_Update()
         //{
         //    //Arrange
         //    ShoppingCart shoppingCart;
@@ -91,16 +93,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             ShoppingCart shoppingCart;
 
             // Act
-            _shoppingCartHelper.Delete(Constants.ShoppingCartGuid);
-            _shoppingCartHelper.CleanUp();
+            await _shoppingCartHelper.DeleteAsync(Constants.ShoppingCartGuid);
+            await _shoppingCartHelper.CleanUpAsync();
 
-            shoppingCart = _unitOfWork.ShoppingCartRepository.GetByGuid(Constants.ShoppingCartGuid);
+            shoppingCart = await _unitOfWork.ShoppingCartRepository.GetByGuidAsync(Constants.ShoppingCartGuid, _token);
 
             //Assert
             Assert.IsTrue(shoppingCart.IsNull());

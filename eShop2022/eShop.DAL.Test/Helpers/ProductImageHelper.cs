@@ -11,17 +11,20 @@ namespace eShop.DAL.Test.Helpers
     public class ProductImageHelper : BaseHelper<ProductImage>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ProductHelper _productHelper;
 
-        public ProductImageHelper(IAppUnitOfWork unitOfWork)
+        public ProductImageHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
-            _productHelper = new ProductHelper(_unitOfWork);
+            _token = token;
+            _productHelper = new ProductHelper(_unitOfWork, _token);
+
         }
 
-        public ProductImage GetTestProductImage(Guid productImageGuid)
+        public async Task<ProductImage> GetTestProductImage(Guid productImageGuid)
         {
-            Product product = _productHelper.Insert(Constants.ProductGuid);
+            Product product = await _productHelper.InsertAsync(Constants.ProductGuid);
 
             ProductImage productImage = new ProductImage()
             {
@@ -38,28 +41,28 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override ProductImage Insert(Guid productImageGuid)
+        public override async Task<ProductImage> InsertAsync(Guid productImageGuid)
         {
-            ProductImage productImage = GetTestProductImage(productImageGuid);
+            ProductImage productImage = await GetTestProductImage(productImageGuid);
 
-            _unitOfWork.ProductImageRepository.Insert(productImage);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.ProductImageRepository.InsertAsync(productImage, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return productImage;
         }
 
-        public override void Delete(Guid productImageGuid)
+        public override async Task DeleteAsync(Guid productImageGuid)
         {
-            ProductImage productImage = _unitOfWork.ProductImageRepository.GetByGuid(Constants.ProductImageGuid);
+            ProductImage productImage = await _unitOfWork.ProductImageRepository.GetByGuidAsync(Constants.ProductImageGuid, _token);
 
-            _unitOfWork.ProductImageRepository.Delete(productImage);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.ProductImageRepository.Delete(productImage, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _productHelper.Delete(Constants.ProductGuid);
-            _productHelper.CleanUp();
+            await _productHelper.DeleteAsync(Constants.ProductGuid);
+            await _productHelper.CleanUpAsync();
         }
 
     }

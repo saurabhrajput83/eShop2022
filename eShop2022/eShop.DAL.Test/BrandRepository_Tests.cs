@@ -14,13 +14,17 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly BrandHelper _brandHelper;
+
 
         public BrandRepository_Tests()
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _brandHelper = new BrandHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _brandHelper = new BrandHelper(_unitOfWork, _token);
+
         }
 
         [TestInitialize]
@@ -29,13 +33,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Brand brand;
 
             // Act
-            brand = _brandHelper.Insert(Constants.BrandGuid);
+            brand = await _brandHelper.InsertAsync(Constants.BrandGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateBrand(brand));
@@ -43,45 +47,45 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<Brand> brands;
 
             // Act
-            brands = _unitOfWork.BrandRepository.GetAll().ToList();
+            brands = await _unitOfWork.BrandRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(brands.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             Brand brand;
 
             // Act
-            brand = _unitOfWork.BrandRepository.GetByGuid(Constants.BrandGuid);
+            brand = await _unitOfWork.BrandRepository.GetByGuidAsync(Constants.BrandGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateBrand(brand));
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             Brand brand;
             string newName = "Test New Brand Name";
 
             // Act
-            brand = _unitOfWork.BrandRepository.GetByGuid(Constants.BrandGuid);
+            brand = await _unitOfWork.BrandRepository.GetByGuidAsync(Constants.BrandGuid, _token);
             if (brand != null)
             {
                 brand.Name = newName;
-                _unitOfWork.BrandRepository.Update(brand);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.BrandRepository.Update(brand, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -90,16 +94,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             Brand brand;
 
             // Act
-            _brandHelper.Delete(Constants.BrandGuid);
-            _brandHelper.CleanUp();
+            await _brandHelper.DeleteAsync(Constants.BrandGuid);
+            await _brandHelper.CleanUpAsync();
 
-            brand = _unitOfWork.BrandRepository.GetByGuid(Constants.BrandGuid);
+            brand = await _unitOfWork.BrandRepository.GetByGuidAsync(Constants.BrandGuid, _token);
 
             //Assert
             Assert.IsTrue(brand.IsNull());

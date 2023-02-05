@@ -13,13 +13,15 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly VariationTypeHelper _variationTypeHelper;
 
         public VariationTypeRepository_Tests()
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _variationTypeHelper = new VariationTypeHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _variationTypeHelper = new VariationTypeHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -28,13 +30,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             VariationType variationType;
 
             // Act
-            variationType = _variationTypeHelper.Insert(Constants.VariationTypeGuid);
+            variationType = await _variationTypeHelper.InsertAsync(Constants.VariationTypeGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateVariationType(variationType));
@@ -42,45 +44,45 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<VariationType> variationTypes;
 
             // Act
-            variationTypes = _unitOfWork.VariationTypeRepository.GetAll().ToList();
+            variationTypes = await _unitOfWork.VariationTypeRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(variationTypes.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             VariationType variationType;
 
             // Act
-            variationType = _unitOfWork.VariationTypeRepository.GetByGuid(Constants.VariationTypeGuid);
+            variationType = await _unitOfWork.VariationTypeRepository.GetByGuidAsync(Constants.VariationTypeGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateVariationType(variationType));
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             VariationType variationType;
             string newName = "New Test VariationType";
 
             // Act
-            variationType = _unitOfWork.VariationTypeRepository.GetByGuid(Constants.VariationTypeGuid);
+            variationType = await _unitOfWork.VariationTypeRepository.GetByGuidAsync(Constants.VariationTypeGuid, _token);
             if (variationType != null)
             {
                 variationType.Name = newName;
-                _unitOfWork.VariationTypeRepository.Update(variationType);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.VariationTypeRepository.Update(variationType, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -89,16 +91,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             VariationType variationType;
 
             // Act
-            _variationTypeHelper.Delete(Constants.VariationTypeGuid);
-            _variationTypeHelper.CleanUp();
+            await _variationTypeHelper.DeleteAsync(Constants.VariationTypeGuid);
+            await _variationTypeHelper.CleanUpAsync();
 
-            variationType = _unitOfWork.VariationTypeRepository.GetByGuid(Constants.VariationTypeGuid);
+            variationType = await _unitOfWork.VariationTypeRepository.GetByGuidAsync(Constants.VariationTypeGuid, _token);
 
             //Assert
             Assert.IsTrue(variationType.IsNull());

@@ -11,10 +11,12 @@ namespace eShop.DAL.Test.Helpers
     public class WarehouseHelper : BaseHelper<Warehouse>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
 
-        public WarehouseHelper(IAppUnitOfWork unitOfWork)
+        public WarehouseHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
+            _token = token;
         }
 
         public Warehouse GetTestWarehouse(Guid warehouseGuid)
@@ -34,25 +36,25 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Warehouse Insert(Guid warehouseGuid)
+        public override async Task<Warehouse> InsertAsync(Guid warehouseGuid)
         {
             Warehouse warehouse = GetTestWarehouse(warehouseGuid);
 
-            _unitOfWork.WarehouseRepository.Insert(warehouse);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.WarehouseRepository.InsertAsync(warehouse, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return warehouse;
         }
 
-        public override void Delete(Guid warehouseGuid)
+        public override async Task DeleteAsync(Guid warehouseGuid)
         {
-            Warehouse warehouse = _unitOfWork.WarehouseRepository.GetByGuid(Constants.WarehouseGuid);
+            Warehouse warehouse = await _unitOfWork.WarehouseRepository.GetByGuidAsync(Constants.WarehouseGuid, _token);
 
-            _unitOfWork.WarehouseRepository.Delete(warehouse);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.WarehouseRepository.Delete(warehouse, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
         }
 

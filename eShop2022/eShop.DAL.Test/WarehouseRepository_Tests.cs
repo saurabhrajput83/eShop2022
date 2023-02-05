@@ -5,6 +5,7 @@ using eShop.DAL.Main;
 using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json.Linq;
 
 namespace eShop.DAL.Test
 {
@@ -13,13 +14,15 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly WarehouseHelper _warehouseHelper;
 
         public WarehouseRepository_Tests()
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _warehouseHelper = new WarehouseHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _warehouseHelper = new WarehouseHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -28,13 +31,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Warehouse warehouse;
 
             // Act
-            warehouse = _warehouseHelper.Insert(Constants.WarehouseGuid);
+            warehouse = await _warehouseHelper.InsertAsync(Constants.WarehouseGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouse));
@@ -42,45 +45,45 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<Warehouse> warehouses;
 
             // Act
-            warehouses = _unitOfWork.WarehouseRepository.GetAll().ToList();
+            warehouses = await _unitOfWork.WarehouseRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(warehouses.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             Warehouse warehouse;
 
             // Act
-            warehouse = _unitOfWork.WarehouseRepository.GetByGuid(Constants.WarehouseGuid);
+            warehouse = await _unitOfWork.WarehouseRepository.GetByGuidAsync(Constants.WarehouseGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateWarehouse(warehouse));
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             Warehouse warehouse;
             string newName = "Test New Warehouse";
 
             // Act
-            warehouse = _unitOfWork.WarehouseRepository.GetByGuid(Constants.WarehouseGuid);
+            warehouse = await _unitOfWork.WarehouseRepository.GetByGuidAsync(Constants.WarehouseGuid, _token);
             if (warehouse != null)
             {
                 warehouse.Name = newName;
-                _unitOfWork.WarehouseRepository.Update(warehouse);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.WarehouseRepository.Update(warehouse, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -89,16 +92,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             Warehouse warehouse;
 
             // Act
-            _warehouseHelper.Delete(Constants.WarehouseGuid);
-            _warehouseHelper.CleanUp();
+            await _warehouseHelper.DeleteAsync(Constants.WarehouseGuid);
+            await _warehouseHelper.CleanUpAsync();
 
-            warehouse = _unitOfWork.WarehouseRepository.GetByGuid(Constants.WarehouseGuid);
+            warehouse = await _unitOfWork.WarehouseRepository.GetByGuidAsync(Constants.WarehouseGuid, _token);
 
             //Assert
             Assert.IsTrue(warehouse.IsNull());

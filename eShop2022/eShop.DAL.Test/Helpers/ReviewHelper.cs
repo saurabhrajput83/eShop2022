@@ -11,17 +11,20 @@ namespace eShop.DAL.Test.Helpers
     public class ReviewHelper : BaseHelper<Review>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ProductHelper _productHelper;
 
-        public ReviewHelper(IAppUnitOfWork unitOfWork)
+        public ReviewHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
-            _productHelper = new ProductHelper(_unitOfWork);
+            _token = token;
+            _productHelper = new ProductHelper(_unitOfWork, _token);
+
         }
 
-        public Review GetTestReview(Guid reviewGuid)
+        public async Task<Review> GetTestReview(Guid reviewGuid)
         {
-            Product product = _productHelper.Insert(Constants.ProductGuid);
+            Product product = await _productHelper.InsertAsync(Constants.ProductGuid);
 
             Review review = new Review()
             {
@@ -40,28 +43,28 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Review Insert(Guid reviewGuid)
+        public override async Task<Review> InsertAsync(Guid reviewGuid)
         {
-            Review review = GetTestReview(reviewGuid);
+            Review review = await GetTestReview(reviewGuid);
 
-            _unitOfWork.ReviewRepository.Insert(review);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.ReviewRepository.InsertAsync(review, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return review;
         }
 
-        public override void Delete(Guid reviewGuid)
+        public override async Task DeleteAsync(Guid reviewGuid)
         {
-            Review review = _unitOfWork.ReviewRepository.GetByGuid(Constants.ReviewGuid);
+            Review review = await _unitOfWork.ReviewRepository.GetByGuidAsync(Constants.ReviewGuid, _token);
 
-            _unitOfWork.ReviewRepository.Delete(review);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.ReviewRepository.Delete(review, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _productHelper.Delete(Constants.ProductGuid);
-            _productHelper.CleanUp();
+            await _productHelper.DeleteAsync(Constants.ProductGuid);
+            await _productHelper.CleanUpAsync();
         }
 
     }

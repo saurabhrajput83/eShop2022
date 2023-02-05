@@ -14,6 +14,7 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ProductHelper _productHelper;
         private readonly BrandHelper _brandHelper;
 
@@ -21,8 +22,9 @@ namespace eShop.DAL.Test
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _productHelper = new ProductHelper(_unitOfWork);
-            _brandHelper = new BrandHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _productHelper = new ProductHelper(_unitOfWork, _token);
+            _brandHelper = new BrandHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -31,13 +33,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Product product;
 
             // Act
-            product = _productHelper.Insert(Constants.ProductGuid);
+            product = await _productHelper.InsertAsync(Constants.ProductGuid);
 
             //Assert
             Assert.IsTrue(product.Id > 0);
@@ -45,26 +47,26 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_GetAll()
+        public async Task Test2_GetAll()
         {
             //Arrange
             List<Product> products;
 
             // Act
-            products = _unitOfWork.ProductRepository.GetAll().ToList();
+            products = await _unitOfWork.ProductRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(products.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test3_GetByGuid()
+        public async Task Test3_GetByGuid()
         {
             //Arrange
             Product product;
 
             // Act
-            product = _unitOfWork.ProductRepository.GetByGuid(Constants.ProductGuid);
+            product = await _unitOfWork.ProductRepository.GetByGuidAsync(Constants.ProductGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateProduct(product));
@@ -72,19 +74,19 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test4_Update()
+        public async Task Test4_Update()
         {
             //Arrange
             Product product;
             string newName = "New Test Product";
 
             // Act
-            product = _unitOfWork.ProductRepository.GetByGuid(Constants.ProductGuid);
+            product = await _unitOfWork.ProductRepository.GetByGuidAsync(Constants.ProductGuid, _token);
             if (product != null)
             {
                 product.Name = newName;
-                _unitOfWork.ProductRepository.Update(product);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.ProductRepository.Update(product, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -93,16 +95,16 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test5_Delete()
+        public async Task Test5_Delete()
         {
             //Arrange
             Product product;
 
             // Act
-            _productHelper.Delete(Constants.ProductGuid);
-            _productHelper.CleanUp();
+            await _productHelper.DeleteAsync(Constants.ProductGuid);
+            await _productHelper.CleanUpAsync();
 
-            product = _unitOfWork.ProductRepository.GetByGuid(Constants.ProductGuid);
+            product = await _unitOfWork.ProductRepository.GetByGuidAsync(Constants.ProductGuid, _token);
 
             //Assert
             Assert.IsTrue(product == null || product.Id == 0);

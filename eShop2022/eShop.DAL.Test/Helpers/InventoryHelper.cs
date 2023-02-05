@@ -11,20 +11,23 @@ namespace eShop.DAL.Test.Helpers
     public class InventoryHelper : BaseHelper<Inventory>
     {
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly ProductHelper _productHelper;
         private readonly WarehouseHelper _warehouseHelper;
 
-        public InventoryHelper(IAppUnitOfWork unitOfWork)
+        public InventoryHelper(IAppUnitOfWork unitOfWork, CancellationToken token)
         {
             _unitOfWork = unitOfWork;
-            _productHelper = new ProductHelper(_unitOfWork);
-            _warehouseHelper = new WarehouseHelper(_unitOfWork);
+            _token = token;
+            _productHelper = new ProductHelper(_unitOfWork, _token);
+            _warehouseHelper = new WarehouseHelper(_unitOfWork, _token);
+
         }
 
-        public Inventory GetTestInventory(Guid inventoryGuid)
+        public async Task<Inventory> GetTestInventory(Guid inventoryGuid)
         {
-            Product product = _productHelper.Insert(Constants.ProductGuid);
-            Warehouse warehouse = _warehouseHelper.Insert(Constants.WarehouseGuid);
+            Product product = await _productHelper.InsertAsync(Constants.ProductGuid);
+            Warehouse warehouse = await _warehouseHelper.InsertAsync(Constants.WarehouseGuid);
 
             Inventory inventory = new Inventory()
             {
@@ -41,30 +44,30 @@ namespace eShop.DAL.Test.Helpers
 
         }
 
-        public override Inventory Insert(Guid inventoryGuid)
+        public override async Task<Inventory> InsertAsync(Guid inventoryGuid)
         {
-            Inventory inventory = GetTestInventory(inventoryGuid);
+            Inventory inventory = await GetTestInventory(inventoryGuid);
 
-            _unitOfWork.InventoryRepository.Insert(inventory);
-            _unitOfWork.SaveChanges();
+            await _unitOfWork.InventoryRepository.InsertAsync(inventory, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
 
             return inventory;
         }
 
-        public override void Delete(Guid inventoryGuid)
+        public override async Task DeleteAsync(Guid inventoryGuid)
         {
-            Inventory inventory = _unitOfWork.InventoryRepository.GetByGuid(Constants.InventoryGuid);
+            Inventory inventory = await _unitOfWork.InventoryRepository.GetByGuidAsync(Constants.InventoryGuid, _token);
 
-            _unitOfWork.InventoryRepository.Delete(inventory);
-            _unitOfWork.SaveChanges();
+            _unitOfWork.InventoryRepository.Delete(inventory, _token);
+            await _unitOfWork.SaveChangesAsync(_token);
         }
 
-        public override void CleanUp()
+        public override async Task CleanUpAsync()
         {
-            _productHelper.Delete(Constants.ProductGuid);
-            _productHelper.CleanUp();
-            _warehouseHelper.Delete(Constants.WarehouseGuid);
-            _warehouseHelper.CleanUp();
+            await _productHelper.DeleteAsync(Constants.ProductGuid);
+            await _productHelper.CleanUpAsync();
+            await _warehouseHelper.DeleteAsync(Constants.WarehouseGuid);
+            await _warehouseHelper.CleanUpAsync();
         }
 
     }

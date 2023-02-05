@@ -6,6 +6,7 @@ using eShop.DAL.Test.Helpers;
 using eShop.Infrastructure.Extensions;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace eShop.DAL.Test
 {
@@ -14,13 +15,15 @@ namespace eShop.DAL.Test
     {
         private readonly AppDbContext _eShopDbContext;
         private readonly IAppUnitOfWork _unitOfWork;
+        private readonly CancellationToken _token;
         private readonly DepartmentHelper _departmentHelper;
 
         public DepartmentRepository_Tests()
         {
             _eShopDbContext = new AppDbContext(DBContextHelper.Options);
             _unitOfWork = new AppUnitOfWork(_eShopDbContext);
-            _departmentHelper = new DepartmentHelper(_unitOfWork);
+            _token = new CancellationToken();
+            _departmentHelper = new DepartmentHelper(_unitOfWork, _token);
         }
 
         [TestInitialize]
@@ -29,13 +32,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test1_Insert()
+        public async Task Test1_Insert()
         {
             //Arrange
             Department department;
 
             // Act
-            department = _departmentHelper.Insert(Constants.DepartmentGuid);
+            department = await _departmentHelper.InsertAsync(Constants.DepartmentGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(department));
@@ -43,13 +46,13 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test2_InsertChild()
+        public async Task Test2_InsertChild()
         {
             //Arrange
             Department childDepartment;
 
             // Act
-            childDepartment = _departmentHelper.InsertChild(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
+            childDepartment = await _departmentHelper.InsertChildAsync(Constants.DepartmentGuid, Constants.ChildDepartmentGuid);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateChildDepartment(childDepartment));
@@ -57,28 +60,28 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test3_GetAll()
+        public async Task Test3_GetAll()
         {
             //Arrange
             List<Department> departments;
 
             // Act
-            departments = _unitOfWork.DepartmentRepository.GetAll().ToList();
+            departments = await _unitOfWork.DepartmentRepository.GetAllAsync(_token);
 
             //Assert
             Assert.IsTrue(departments.IsNotEmpty());
         }
 
         [TestMethod]
-        public void Test4_GetByGuid()
+        public async Task Test4_GetByGuid()
         {
             //Arrange
             Department department;
             Department childDepartment;
 
             // Act
-            department = _unitOfWork.DepartmentRepository.GetByGuid(Constants.DepartmentGuid);
-            childDepartment = _unitOfWork.DepartmentRepository.GetByGuid(Constants.ChildDepartmentGuid);
+            department = await _unitOfWork.DepartmentRepository.GetByGuidAsync(Constants.DepartmentGuid, _token);
+            childDepartment = await _unitOfWork.DepartmentRepository.GetByGuidAsync(Constants.ChildDepartmentGuid, _token);
 
             //Assert
             Assert.IsTrue(ValidationHelper.ValidateDepartment(department));
@@ -86,19 +89,19 @@ namespace eShop.DAL.Test
         }
 
         [TestMethod]
-        public void Test5_Update()
+        public async Task Test5_Update()
         {
             //Arrange
             Department department;
             string newName = "New Test Department";
 
             // Act
-            department = _unitOfWork.DepartmentRepository.GetByGuid(Constants.DepartmentGuid);
+            department = await _unitOfWork.DepartmentRepository.GetByGuidAsync(Constants.DepartmentGuid, _token);
             if (department != null)
             {
                 department.Name = newName;
-                _unitOfWork.DepartmentRepository.Update(department);
-                _unitOfWork.SaveChanges();
+                _unitOfWork.DepartmentRepository.Update(department, _token);
+                await _unitOfWork.SaveChangesAsync(_token);
             }
 
             //Assert
@@ -107,7 +110,7 @@ namespace eShop.DAL.Test
 
 
         [TestMethod]
-        public void Test6_Delete()
+        public async Task Test6_Delete()
         {
             //Arrange
             Department childDepartment;
@@ -115,12 +118,12 @@ namespace eShop.DAL.Test
 
 
             // Act
-            _departmentHelper.Delete(Constants.ChildDepartmentGuid);
-            _departmentHelper.Delete(Constants.DepartmentGuid);
-            _departmentHelper.CleanUp();
+            await _departmentHelper.DeleteAsync(Constants.ChildDepartmentGuid);
+            await _departmentHelper.DeleteAsync(Constants.DepartmentGuid);
+            await _departmentHelper.CleanUpAsync();
 
-            childDepartment = _unitOfWork.DepartmentRepository.GetByGuid(Constants.ChildDepartmentGuid);
-            department = _unitOfWork.DepartmentRepository.GetByGuid(Constants.DepartmentGuid);
+            childDepartment = await _unitOfWork.DepartmentRepository.GetByGuidAsync(Constants.ChildDepartmentGuid, _token);
+            department = await _unitOfWork.DepartmentRepository.GetByGuidAsync(Constants.DepartmentGuid, _token);
 
             //Assert
             Assert.IsTrue(childDepartment.IsNull());
