@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Inventory inventoryEntity = _mapper.Map<InventoryFullView, Inventory>(inventoryView);
+                Inventory inventoryEntity = _unitOfWork.InventoryRepository.GetByGuid(inventoryView.Guid);
+                inventoryEntity = _mapper.Map<InventoryFullView, Inventory>(inventoryView, inventoryEntity);
                 _unitOfWork.InventoryRepository.Update(inventoryEntity);
                 _unitOfWork.SaveChanges();
             }

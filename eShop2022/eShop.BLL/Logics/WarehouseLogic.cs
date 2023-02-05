@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Warehouse warehouseEntity = _mapper.Map<WarehouseFullView, Warehouse>(warehouseView);
+                Warehouse warehouseEntity = _unitOfWork.WarehouseRepository.GetByGuid(warehouseView.Guid);
+                warehouseEntity = _mapper.Map<WarehouseFullView, Warehouse>(warehouseView, warehouseEntity);
                 _unitOfWork.WarehouseRepository.Update(warehouseEntity);
                 _unitOfWork.SaveChanges();
             }

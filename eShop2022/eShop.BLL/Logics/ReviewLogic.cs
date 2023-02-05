@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Review reviewEntity = _mapper.Map<ReviewView, Review>(reviewView);
+                Review reviewEntity = _unitOfWork.ReviewRepository.GetByGuid(reviewView.Guid);
+                reviewEntity = _mapper.Map<ReviewView, Review>(reviewView, reviewEntity);
                 _unitOfWork.ReviewRepository.Update(reviewEntity);
                 _unitOfWork.SaveChanges();
             }

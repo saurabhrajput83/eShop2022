@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Product productEntity = _mapper.Map<ProductFullView, Product>(productView);
+                Product productEntity = _unitOfWork.ProductRepository.GetByGuid(productView.Guid);
+                productEntity = _mapper.Map<ProductFullView, Product>(productView, productEntity);
                 _unitOfWork.ProductRepository.Update(productEntity);
                 _unitOfWork.SaveChanges();
             }

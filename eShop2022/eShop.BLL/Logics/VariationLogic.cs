@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Variation variationEntity = _mapper.Map<VariationFullView, Variation>(variationView);
+                Variation variationEntity = _unitOfWork.VariationRepository.GetByGuid(variationView.Guid);
+                variationEntity = _mapper.Map<VariationFullView, Variation>(variationView, variationEntity);
                 _unitOfWork.VariationRepository.Update(variationEntity);
                 _unitOfWork.SaveChanges();
             }

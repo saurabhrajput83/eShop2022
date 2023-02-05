@@ -100,7 +100,8 @@ namespace eShop.BLL.Logics
         {
             try
             {
-                Department departmentEntity = _mapper.Map<DepartmentFullView, Department>(departmentView);
+                Department departmentEntity = _unitOfWork.DepartmentRepository.GetByGuid(departmentView.Guid);
+                departmentEntity = _mapper.Map<DepartmentFullView, Department>(departmentView, departmentEntity);
                 _unitOfWork.DepartmentRepository.Update(departmentEntity);
                 _unitOfWork.SaveChanges();
             }
