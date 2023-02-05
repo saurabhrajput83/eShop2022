@@ -10,9 +10,9 @@ namespace eShop.DAL.Test.Helpers
 {
     public class ShoppingCartHelper : BaseHelper<ShoppingCart>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        public ShoppingCartHelper(IeShopUnitOfWork unitOfWork)
+        public ShoppingCartHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

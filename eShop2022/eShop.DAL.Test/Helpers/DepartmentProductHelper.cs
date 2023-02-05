@@ -11,11 +11,11 @@ namespace eShop.DAL.Test.Helpers
 {
     public class DepartmentProductHelper : BaseHelper<DepartmentProduct>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly DepartmentHelper _departmentHelper;
         private readonly ProductHelper _productHelper;
 
-        public DepartmentProductHelper(IeShopUnitOfWork unitOfWork)
+        public DepartmentProductHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _departmentHelper = new DepartmentHelper(unitOfWork);

@@ -10,10 +10,10 @@ namespace eShop.DAL.Test.Helpers
 {
     public class ProductImageHelper : BaseHelper<ProductImage>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly ProductHelper _productHelper;
 
-        public ProductImageHelper(IeShopUnitOfWork unitOfWork)
+        public ProductImageHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _productHelper = new ProductHelper(_unitOfWork);

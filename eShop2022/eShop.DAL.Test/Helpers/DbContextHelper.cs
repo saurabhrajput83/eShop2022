@@ -12,17 +12,17 @@ namespace eShop.DAL.Test.Helpers
 {
     public sealed class DBContextHelper
     {
-        private static DbContextOptions<eShopDbContext> _options;
+        private static DbContextOptions<AppDbContext> _options;
         private DBContextHelper()
         { }
 
-        public static DbContextOptions<eShopDbContext> Options
+        public static DbContextOptions<AppDbContext> Options
         {
             get
             {
                 if (_options == null)
                 {
-                    _options = new DbContextOptionsBuilder<eShopDbContext>()
+                    _options = new DbContextOptionsBuilder<AppDbContext>()
                     .UseInMemoryDatabase(databaseName: "eShopDb")
                     .Options;
                 }

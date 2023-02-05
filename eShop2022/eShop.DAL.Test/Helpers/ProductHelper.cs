@@ -10,10 +10,10 @@ namespace eShop.DAL.Test.Helpers
 {
     public class ProductHelper : BaseHelper<Product>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly BrandHelper _brandHelper;
 
-        public ProductHelper(IeShopUnitOfWork unitOfWork)
+        public ProductHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _brandHelper = new BrandHelper(_unitOfWork);

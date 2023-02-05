@@ -12,19 +12,19 @@ namespace eShop.DAL.Test
     [TestClass]
     public class InventoryRepository_Tests : Base_Test
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly InventoryHelper _inventoryHelper;
 
         public InventoryRepository_Tests()
         {
-            DbContextOptions<eShopDbContext> dbContextOptions =
-            new DbContextOptionsBuilder<eShopDbContext>()
+            DbContextOptions<AppDbContext> dbContextOptions =
+            new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: "eShopDb")
             .Options;
 
-            _eShopDbContext = new eShopDbContext(dbContextOptions);
-            _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
+            _eShopDbContext = new AppDbContext(dbContextOptions);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _inventoryHelper = new InventoryHelper(_unitOfWork);
         }
 

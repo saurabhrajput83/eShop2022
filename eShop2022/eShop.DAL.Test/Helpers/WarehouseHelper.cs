@@ -10,9 +10,9 @@ namespace eShop.DAL.Test.Helpers
 {
     public class WarehouseHelper : BaseHelper<Warehouse>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        public WarehouseHelper(IeShopUnitOfWork unitOfWork)
+        public WarehouseHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

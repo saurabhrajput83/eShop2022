@@ -10,11 +10,11 @@ namespace eShop.DAL.Test.Helpers
 {
     public class SelectedItemHelper : BaseHelper<SelectedItem>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly ProductHelper _productHelper;
         private readonly ShoppingCartHelper _shoppingCartHelper;
 
-        public SelectedItemHelper(IeShopUnitOfWork unitOfWork)
+        public SelectedItemHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _productHelper = new ProductHelper(unitOfWork);

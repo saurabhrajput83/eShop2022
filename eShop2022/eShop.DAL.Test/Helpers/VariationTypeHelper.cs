@@ -10,9 +10,9 @@ namespace eShop.DAL.Test.Helpers
 {
     public class VariationTypeHelper : BaseHelper<VariationType>
     {
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly IAppUnitOfWork _unitOfWork;
 
-        public VariationTypeHelper(IeShopUnitOfWork unitOfWork)
+        public VariationTypeHelper(IAppUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

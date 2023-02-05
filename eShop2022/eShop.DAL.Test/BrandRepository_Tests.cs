@@ -12,14 +12,14 @@ namespace eShop.DAL.Test
     [TestClass]
     public class BrandRepository_Tests : Base_Test
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly BrandHelper _brandHelper;
 
         public BrandRepository_Tests()
         {
-            _eShopDbContext = new eShopDbContext(DBContextHelper.Options);
-            _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _brandHelper = new BrandHelper(_unitOfWork);
         }
 

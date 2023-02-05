@@ -12,15 +12,15 @@ namespace eShop.DAL.Test
     [TestClass]
     public class ShoppingCartRepository_Tests : Base_Test
     {
-        private readonly eShopDbContext _eShopDbContext;
-        private readonly IeShopUnitOfWork _unitOfWork;
+        private readonly AppDbContext _eShopDbContext;
+        private readonly IAppUnitOfWork _unitOfWork;
         private readonly ShoppingCartHelper _shoppingCartHelper;
 
         public ShoppingCartRepository_Tests()
         {
 
-            _eShopDbContext = new eShopDbContext(DBContextHelper.Options);
-            _unitOfWork = new eShopUnitOfWork(_eShopDbContext);
+            _eShopDbContext = new AppDbContext(DBContextHelper.Options);
+            _unitOfWork = new AppUnitOfWork(_eShopDbContext);
             _shoppingCartHelper = new ShoppingCartHelper(_unitOfWork);
         }
 
